@@ -1,0 +1,72 @@
+<h2>Архитектурные подходы</h2>
+<p class="subtitle">Как организовать внутренности антивируса?</p>
+
+<div class="options">
+  <div class="option" data-choice="service_gui" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Windows Service + GUI (рекомендую)</h3>
+      <p>Два процесса: фоновый сервис (запускается при старте Windows, всегда работает) и GUI-приложение (показывает статус, управляет сервисом). Общаются через Named Pipes.</p>
+
+      <div style="background:#f0f9ff;border-radius:8px;padding:10px;margin:8px 0;font-size:11px;font-family:monospace;color:#0369a1;">
+        [Windows Service]<br>
+        ├── RealTimeGuard (FileSystemWatcher)<br>
+        ├── ScanEngine (YARA + ClamAV)<br>
+        ├── QuarantineManager<br>
+        └── ← Named Pipes IPC →<br><br>
+        [GUI App — Avalonia]<br>
+        ├── Dashboard<br>
+        ├── ScanView<br>
+        └── Settings
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros"><h4>Плюсы</h4><ul><li>Защита работает даже когда GUI закрыт</li><li>Так работают все настоящие антивирусы</li><li>Сервис стартует с Windows</li></ul></div>
+        <div class="cons"><h4>Минусы</h4><ul><li>Сложнее: два проекта, IPC, права администратора для сервиса</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="single_process" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Единый процесс с фоновыми потоками</h3>
+      <p>Одно приложение: GUI + движок в одном процессе. Мониторинг запускается в фоне при старте приложения. Приложение добавляется в автозагрузку Windows.</p>
+
+      <div style="background:#f0fdf4;border-radius:8px;padding:10px;margin:8px 0;font-size:11px;font-family:monospace;color:#15803d;">
+        [Единый процесс — Avalonia App]<br>
+        ├── UI Layer (MVVM)<br>
+        ├── BackgroundService (hosted)<br>
+        │   ├── RealTimeGuard<br>
+        │   ├── ScanEngine<br>
+        │   └── QuarantineManager<br>
+        └── Tray Icon
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros"><h4>Плюсы</h4><ul><li>Проще в разработке</li><li>Один проект</li><li>Хорошо для старта, особенно с новым языком</li></ul></div>
+        <div class="cons"><h4>Минусы</h4><ul><li>Защита не работает если пользователь закрыл приложение полностью</li><li>Иконка в трее обязательна</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="hybrid" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Гибрид: старт как B, рефакторинг в A</h3>
+      <p>Начать с единого процесса (проще учиться C#), но сразу проектировать слои так, чтобы потом легко вынести движок в сервис. Модули изолированы через интерфейсы.</p>
+
+      <div style="background:#fefce8;border-radius:8px;padding:10px;margin:8px 0;font-size:11px;color:#854d0e;">
+        v1: Единый процесс с чистыми интерфейсами<br>
+        → IAntivirusEngine, IQuarantine, IRealTimeGuard<br><br>
+        v2: Engine → Windows Service<br>
+        GUI подключается к уже готовым интерфейсам
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros"><h4>Плюсы</h4><ul><li>Легко начать</li><li>Правильная архитектура с первого дня</li><li>Нет технического долга при переходе</li></ul></div>
+        <div class="cons"><h4>Минусы</h4><ul><li>Требует дисциплины при проектировании интерфейсов</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

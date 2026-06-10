@@ -1,0 +1,40 @@
+<h2>Технологический стек</h2>
+<p class="subtitle">Для Windows антивируса нужна хорошая интеграция с ОС. Какой стек предпочитаешь?</p>
+
+<div class="options">
+  <div class="option" data-choice="csharp" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>C# + .NET (WPF / MAUI)</h3>
+      <p>Нативный Windows-стек. Отличный доступ к WinAPI, реестру, службам. WPF — мощный UI, много готовых библиотек для безопасности. Рекомендую как основной выбор.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Плюсы</h4><ul><li>Родной для Windows</li><li>Богатый WinAPI доступ</li><li>NuGet: YARA, ClamAV обёртки, Authenticode</li><li>Хорошая производительность</li></ul></div>
+        <div class="cons"><h4>Минусы</h4><ul><li>Только Windows (WPF)</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="python" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Python + PyQt / PySide6</h3>
+      <p>Быстрая разработка, огромная экосистема. YARA-python, python-magic, pywin32 — всё есть. Хуже для системного уровня, медленнее, сложнее дистрибьютировать.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Плюсы</h4><ul><li>Быстрая разработка</li><li>Огромная экосистема</li><li>YARA-python, pywin32</li></ul></div>
+        <div class="cons"><h4>Минусы</h4><ul><li>Медленнее нативных</li><li>exe-дистрибуция громоздкая</li><li>Ограниченный низкоуровневый доступ</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="electron" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Electron / Tauri (JS/TS + Rust)</h3>
+      <p>Современный красивый UI на веб-технологиях. Tauri — лёгкий Rust бэкенд + React фронтенд. Electron — тяжелее, но проще. Системная интеграция через нативные модули.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Плюсы</h4><ul><li>Красивый современный UI</li><li>Kросс-платформа</li><li>Большое сообщество</li></ul></div>
+        <div class="cons"><h4>Минусы</h4><ul><li>Electron тяжёлый (150+ MB)</li><li>Системный уровень через отдельный процесс</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

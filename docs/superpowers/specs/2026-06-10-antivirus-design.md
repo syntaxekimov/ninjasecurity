@@ -237,6 +237,8 @@
 
 ## 6. Структура проекта
 
+**Примечание по ClamAV:** `nClam` подключается к запущенному процессу `clamd.exe`. `clamd.exe` (ClamAV for Windows) бандлится в поставку приложения и запускается как дочерний процесс внутри `AppName.Service`. Это стандартный подход для Windows-приложений, использующих ClamAV.
+
 ```
 AppName/
 ├── AppName.sln
@@ -290,7 +292,7 @@ AppName/
 | CommunityToolkit.Mvvm | MVVM helpers |
 | Microsoft.Extensions.Hosting | Windows Service hosting |
 | Entity Framework Core + SQLite | База данных |
-| nClam | ClamAV .NET клиент |
+| nClam | ClamAV .NET клиент (подключается к clamd демону по TCP) |
 | dnYara | YARA .NET bindings |
 | Hardcodet.NotifyIcon.Wpf | Tray icon (или Avalonia.Controls.TrayIcon) |
 
