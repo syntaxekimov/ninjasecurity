@@ -12,4 +12,3 @@ public record ScanResult(
         new(filePath, false, null, 0, DetectionSource.None);
 }
 
-public enum DetectionSource { None, Hash, ClamAv, Yara }
