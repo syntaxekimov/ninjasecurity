@@ -22,6 +22,7 @@ public class RealTimeGuard : IRealTimeGuard
     private readonly ILogger<RealTimeGuard>? _logger;
     private readonly string[] _watchPaths;
     private readonly List<FileSystemWatcher> _watchers = [];
+    private readonly RansomwareDetector _ransomwareDetector;
     private bool _running;
 
     public bool IsRunning => _running;
@@ -31,12 +32,15 @@ public class RealTimeGuard : IRealTimeGuard
         IScanEngine scanEngine,
         IQuarantineManager quarantine,
         string[]? watchPaths = null,
-        ILogger<RealTimeGuard>? logger = null)
+        ILogger<RealTimeGuard>? logger = null,
+        RansomwareDetector? ransomwareDetector = null)
     {
         _scanEngine = scanEngine;
         _quarantine = quarantine;
         _logger = logger;
         _watchPaths = watchPaths is { Length: > 0 } ? watchPaths : DefaultWatchPaths;
+        _ransomwareDetector = ransomwareDetector ?? new RansomwareDetector();
+        _ransomwareDetector.AlarmRaised += OnRansomwareAlarm;
     }
 
     public void Start()
@@ -86,8 +90,15 @@ public class RealTimeGuard : IRealTimeGuard
 
     private void OnRenamed(object sender, RenamedEventArgs e)
     {
+        _ransomwareDetector.RecordRename(e.OldFullPath, e.FullPath);
         if (!IsMonitoredExtension(e.FullPath)) return;
         _ = ScanAndActAsync(e.FullPath);
+    }
+
+    private void OnRansomwareAlarm(object? sender, EventArgs e)
+    {
+        _logger?.LogWarning("Ransomware mass-rename detected — alarm triggered");
+        ThreatDetected?.Invoke(this, "[RANSOMWARE] Mass file rename detected");
     }
 
     private async Task ScanAndActAsync(string filePath)
