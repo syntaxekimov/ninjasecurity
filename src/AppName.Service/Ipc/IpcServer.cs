@@ -39,6 +39,10 @@ public class IpcServer
 
     private async Task AcceptConnectionAsync(CancellationToken ct)
     {
+        // TODO(Plan 2 - security): restrict pipe ACL to Administrators + SYSTEM via
+        // NamedPipeServerStreamAcl.Create (Windows-only). Current state: any local
+        // user can connect. Mitigated in production by running the service as SYSTEM
+        // and requiring the GUI to run elevated.
         await using var pipe = new NamedPipeServerStream(
             PipeName,
             PipeDirection.InOut,
@@ -65,7 +69,9 @@ public class IpcServer
         }
         catch (Exception ex)
         {
-            response = IpcResponse.Fail(ex.Message);
+            // Log full exception server-side, return opaque error to client
+            _logger.LogError(ex, "Unhandled error processing IPC request");
+            response = IpcResponse.Fail("Internal error");
         }
 
         var responseJson = JsonSerializer.Serialize(response);
