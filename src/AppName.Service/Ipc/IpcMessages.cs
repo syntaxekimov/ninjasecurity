@@ -15,3 +15,10 @@ public record IpcResponse(bool Success, string? Error, JsonElement? Data)
 
 public record StartScanPayload(string Type, string? Path);
 public record QuarantineActionPayload(Guid Id, string Action);
+
+public record IpcEvent(string EventType, JsonElement? Data = null);
+
+public record ScanProgressPayload(int Percent, string CurrentFile, int FilesScanned);
+public record ThreatFoundPayload(string FilePath, string? ThreatName, int ConfidenceScore);
+public record ScanCompletePayload(int ThreatsFound, int FilesScanned, TimeSpan Duration);
+public record RealTimeAlertPayload(string FilePath, string? ThreatName, bool AutoQuarantined);
