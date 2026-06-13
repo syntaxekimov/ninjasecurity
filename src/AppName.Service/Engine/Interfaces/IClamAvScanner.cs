@@ -5,4 +5,4 @@ public interface IClamAvScanner
     Task<ClamAvResult> ScanAsync(string filePath, CancellationToken ct = default);
 }
 
-public record ClamAvResult(bool IsInfected, string? VirusName);
+public record ClamAvResult(bool IsInfected, string? VirusName, bool ScanFailed = false);
