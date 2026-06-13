@@ -1,0 +1,111 @@
+using AppName.Service.Engine.Interfaces;
+using Microsoft.Extensions.Logging;
+
+namespace AppName.Service.Engine;
+
+public class RealTimeGuard : IRealTimeGuard
+{
+    private static readonly string[] MonitoredExtensions =
+        [".exe", ".dll", ".bat", ".cmd", ".ps1", ".vbs", ".js", ".msi", ".scr"];
+
+    private static readonly string[] DefaultWatchPaths =
+    [
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        Path.GetTempPath(),
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+        Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+    ];
+
+    private readonly IScanEngine _scanEngine;
+    private readonly IQuarantineManager _quarantine;
+    private readonly ILogger<RealTimeGuard>? _logger;
+    private readonly string[] _watchPaths;
+    private readonly List<FileSystemWatcher> _watchers = [];
+    private bool _running;
+
+    public bool IsRunning => _running;
+    public event EventHandler<string>? ThreatDetected;
+
+    public RealTimeGuard(
+        IScanEngine scanEngine,
+        IQuarantineManager quarantine,
+        string[]? watchPaths = null,
+        ILogger<RealTimeGuard>? logger = null)
+    {
+        _scanEngine = scanEngine;
+        _quarantine = quarantine;
+        _logger = logger;
+        _watchPaths = watchPaths is { Length: > 0 } ? watchPaths : DefaultWatchPaths;
+    }
+
+    public void Start()
+    {
+        if (_running) return;
+
+        foreach (var path in _watchPaths)
+        {
+            if (!Directory.Exists(path)) continue;
+
+            var watcher = new FileSystemWatcher(path)
+            {
+                IncludeSubdirectories = true,
+                NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite,
+                EnableRaisingEvents = true
+            };
+            watcher.Created += OnFileEvent;
+            watcher.Changed += OnFileEvent;
+            watcher.Renamed += OnRenamed;
+            _watchers.Add(watcher);
+        }
+
+        _running = true;
+        _logger?.LogInformation("RealTimeGuard started, watching {Count} directories", _watchers.Count);
+    }
+
+    public void Stop()
+    {
+        foreach (var watcher in _watchers)
+        {
+            watcher.EnableRaisingEvents = false;
+            watcher.Dispose();
+        }
+        _watchers.Clear();
+        _running = false;
+        _logger?.LogInformation("RealTimeGuard stopped");
+    }
+
+    public static bool IsMonitoredExtension(string fileName) =>
+        MonitoredExtensions.Contains(Path.GetExtension(fileName).ToLowerInvariant());
+
+    private void OnFileEvent(object sender, FileSystemEventArgs e)
+    {
+        if (!IsMonitoredExtension(e.FullPath)) return;
+        _ = ScanAndActAsync(e.FullPath);
+    }
+
+    private void OnRenamed(object sender, RenamedEventArgs e)
+    {
+        if (!IsMonitoredExtension(e.FullPath)) return;
+        _ = ScanAndActAsync(e.FullPath);
+    }
+
+    private async Task ScanAndActAsync(string filePath)
+    {
+        try
+        {
+            await Task.Delay(200);
+            var result = await _scanEngine.ScanFileAsync(filePath);
+            if (result.IsThreat)
+            {
+                _logger?.LogWarning("Real-time threat detected: {Path} ({Threat})", filePath, result.ThreatName);
+                await _quarantine.IsolateAsync(filePath, result);
+                ThreatDetected?.Invoke(this, filePath);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error scanning file {Path}", filePath);
+        }
+    }
+}
