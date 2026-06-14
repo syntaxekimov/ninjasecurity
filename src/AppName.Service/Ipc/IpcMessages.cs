@@ -22,3 +22,5 @@ public record ScanProgressPayload(int Percent, string CurrentFile, int FilesScan
 public record ThreatFoundPayload(string FilePath, string? ThreatName, int ConfidenceScore);
 public record ScanCompletePayload(int ThreatsFound, int FilesScanned, TimeSpan Duration);
 public record RealTimeAlertPayload(string FilePath, string? ThreatName, bool AutoQuarantined);
+
+public record SetRealTimePayload(bool Enabled);

@@ -7,21 +7,41 @@ public class CommandHandler
 {
     private readonly IScanEngine _scanEngine;
     private readonly IQuarantineManager _quarantine;
+    private readonly IRealTimeGuard _realTimeGuard;
+    private readonly IProcessMonitor _processMonitor;
+    private readonly ISystemOptimizer _systemOptimizer;
+    private readonly IUpdateService _updateService;
 
-    public CommandHandler(IScanEngine scanEngine, IQuarantineManager quarantine)
+    public CommandHandler(
+        IScanEngine scanEngine,
+        IQuarantineManager quarantine,
+        IRealTimeGuard realTimeGuard,
+        IProcessMonitor processMonitor,
+        ISystemOptimizer systemOptimizer,
+        IUpdateService updateService)
     {
         _scanEngine = scanEngine;
         _quarantine = quarantine;
+        _realTimeGuard = realTimeGuard;
+        _processMonitor = processMonitor;
+        _systemOptimizer = systemOptimizer;
+        _updateService = updateService;
     }
 
     public async Task<IpcResponse> HandleAsync(IpcRequest request, CancellationToken ct = default)
     {
         return request.Command switch
         {
-            "StartScan"        => await HandleStartScanAsync(request, ct),
-            "GetStatus"        => HandleGetStatus(),
-            "QuarantineAction" => await HandleQuarantineActionAsync(request, ct),
-            "ListQuarantine"   => await HandleListQuarantineAsync(ct),
+            "StartScan"          => await HandleStartScanAsync(request, ct),
+            "GetStatus"          => HandleGetStatus(),
+            "QuarantineAction"   => await HandleQuarantineActionAsync(request, ct),
+            "ListQuarantine"     => await HandleListQuarantineAsync(ct),
+            "GetRealTimeStatus"  => HandleGetRealTimeStatus(),
+            "SetRealTimeEnabled" => HandleSetRealTimeEnabled(request),
+            "GetProcessList"     => await HandleGetProcessListAsync(ct),
+            "GetAutostartEntries"=> await HandleGetAutostartAsync(ct),
+            "CleanTempFiles"     => await HandleCleanTempAsync(ct),
+            "UpdateSignatures"   => await HandleUpdateSignaturesAsync(ct),
             _ => IpcResponse.Fail($"Unknown command: {request.Command}")
         };
     }
@@ -110,5 +130,48 @@ public class CommandHandler
             e.Sha256,
             QuarantinedAt = e.QuarantinedAt.ToString("O")
         })));
+    }
+
+    private IpcResponse HandleGetRealTimeStatus() =>
+        IpcResponse.Ok(JsonSerializer.SerializeToElement(new
+        {
+            enabled = _realTimeGuard.IsRunning
+        }));
+
+    private IpcResponse HandleSetRealTimeEnabled(IpcRequest request)
+    {
+        if (request.Payload is not JsonElement payload)
+            return IpcResponse.Fail("Payload required");
+        var args = payload.Deserialize<SetRealTimePayload>();
+        if (args is null) return IpcResponse.Fail("Invalid payload");
+        if (args.Enabled) _realTimeGuard.Start(); else _realTimeGuard.Stop();
+        return IpcResponse.Ok();
+    }
+
+    private async Task<IpcResponse> HandleGetProcessListAsync(CancellationToken ct)
+    {
+        var processes = await _processMonitor.GetProcessesAsync(ct);
+        return IpcResponse.Ok(JsonSerializer.SerializeToElement(processes.Select(p => new
+        {
+            p.Pid, p.Name, p.ExecutablePath, p.HasValidSignature, p.RiskScore
+        })));
+    }
+
+    private async Task<IpcResponse> HandleGetAutostartAsync(CancellationToken ct)
+    {
+        var entries = await _systemOptimizer.GetAutostartEntriesAsync(ct);
+        return IpcResponse.Ok(JsonSerializer.SerializeToElement(entries));
+    }
+
+    private async Task<IpcResponse> HandleCleanTempAsync(CancellationToken ct)
+    {
+        var freed = await _systemOptimizer.CleanTempFilesAsync(ct);
+        return IpcResponse.Ok(JsonSerializer.SerializeToElement(new { freedBytes = freed }));
+    }
+
+    private async Task<IpcResponse> HandleUpdateSignaturesAsync(CancellationToken ct)
+    {
+        var ok = await _updateService.UpdateSignaturesAsync(ct);
+        return ok ? IpcResponse.Ok() : IpcResponse.Fail("Signature update failed");
     }
 }
