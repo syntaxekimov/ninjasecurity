@@ -1,4 +1,5 @@
 using AppName.Service.Engine.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AppName.Service.Engine;
@@ -18,7 +19,8 @@ public class RealTimeGuard : IRealTimeGuard
     ];
 
     private readonly IScanEngine _scanEngine;
-    private readonly IQuarantineManager _quarantine;
+    private readonly IServiceScopeFactory? _scopeFactory;
+    private readonly IQuarantineManager? _quarantineDirect;
     private readonly ILogger<RealTimeGuard>? _logger;
     private readonly string[] _watchPaths;
     private readonly List<FileSystemWatcher> _watchers = [];
@@ -28,6 +30,22 @@ public class RealTimeGuard : IRealTimeGuard
     public bool IsRunning => _running;
     public event EventHandler<string>? ThreatDetected;
 
+    [ActivatorUtilitiesConstructor]
+    public RealTimeGuard(
+        IScanEngine scanEngine,
+        IServiceScopeFactory scopeFactory,
+        string[]? watchPaths = null,
+        ILogger<RealTimeGuard>? logger = null,
+        RansomwareDetector? ransomwareDetector = null)
+    {
+        _scanEngine = scanEngine;
+        _scopeFactory = scopeFactory;
+        _logger = logger;
+        _watchPaths = watchPaths is { Length: > 0 } ? watchPaths : DefaultWatchPaths;
+        _ransomwareDetector = ransomwareDetector ?? new RansomwareDetector();
+        _ransomwareDetector.AlarmRaised += OnRansomwareAlarm;
+    }
+
     public RealTimeGuard(
         IScanEngine scanEngine,
         IQuarantineManager quarantine,
@@ -36,7 +54,7 @@ public class RealTimeGuard : IRealTimeGuard
         RansomwareDetector? ransomwareDetector = null)
     {
         _scanEngine = scanEngine;
-        _quarantine = quarantine;
+        _quarantineDirect = quarantine;
         _logger = logger;
         _watchPaths = watchPaths is { Length: > 0 } ? watchPaths : DefaultWatchPaths;
         _ransomwareDetector = ransomwareDetector ?? new RansomwareDetector();
@@ -110,7 +128,7 @@ public class RealTimeGuard : IRealTimeGuard
             if (result.IsThreat)
             {
                 _logger?.LogWarning("Real-time threat detected: {Path} ({Threat})", filePath, result.ThreatName);
-                await _quarantine.IsolateAsync(filePath, result);
+                await IsolateAsync(filePath, result);
                 ThreatDetected?.Invoke(this, filePath);
             }
         }
@@ -118,5 +136,18 @@ public class RealTimeGuard : IRealTimeGuard
         {
             _logger?.LogError(ex, "Error scanning file {Path}", filePath);
         }
+    }
+
+    private async Task IsolateAsync(string filePath, Engine.Models.ScanResult result, CancellationToken ct = default)
+    {
+        if (_quarantineDirect is not null)
+        {
+            await _quarantineDirect.IsolateAsync(filePath, result, ct);
+            return;
+        }
+
+        await using var scope = _scopeFactory!.CreateAsyncScope();
+        var quarantine = scope.ServiceProvider.GetRequiredService<IQuarantineManager>();
+        await quarantine.IsolateAsync(filePath, result, ct);
     }
 }

@@ -30,6 +30,19 @@ builder.Services.AddSingleton<IpcServer>(); // uses IServiceScopeFactory interna
 builder.Services.AddScoped<IQuarantineManager, QuarantineManager>();
 builder.Services.AddScoped<CommandHandler>(); // resolved per-scope inside IpcServer
 
+// Plan 2 — real-time protection and system tools
+builder.Services.AddSingleton<IRealTimeGuard>(sp => new RealTimeGuard(
+    sp.GetRequiredService<IScanEngine>(),
+    sp.GetRequiredService<IServiceScopeFactory>(),
+    logger: sp.GetService<ILogger<RealTimeGuard>>(),
+    ransomwareDetector: sp.GetService<RansomwareDetector>()));
+builder.Services.AddSingleton<IProcessMonitor, ProcessMonitor>();
+builder.Services.AddSingleton<ISystemOptimizer, SystemOptimizer>();
+builder.Services.AddSingleton<IUpdateService, UpdateService>();
+builder.Services.AddSingleton<RansomwareDetector>();
+builder.Services.AddSingleton<IpcEventChannel>();
+builder.Services.AddHttpClient<UpdateService>();
+
 builder.Services.AddHostedService<Worker>();
 
 var host = builder.Build();
