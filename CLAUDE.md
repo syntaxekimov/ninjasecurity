@@ -1,4 +1,4 @@
-# AppName — Antivirus Project
+# Ninja Security — Antivirus Project
 
 ## Language
 Always respond in Russian.
@@ -27,7 +27,7 @@ When implementing or reviewing these components, load the corresponding skill:
 
 ## Architecture Rules
 - Service and App are separate .NET projects in one solution
-- All engine logic lives in `AppName.Service`, never in `AppName.App`
+- All engine logic lives in `NinjaSecurity.Service`, never in `NinjaSecurity.App`
 - GUI communicates with service ONLY via IpcClient/IpcServer (Named Pipes)
 - Use MVVM pattern in Avalonia (CommunityToolkit.Mvvm)
 - All database access goes through Entity Framework Core + SQLite
