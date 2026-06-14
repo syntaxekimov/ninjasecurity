@@ -1,9 +1,9 @@
-using AppName.Service.Engine.Interfaces;
-using AppName.Service.Engine.Models;
+using NinjaSecurity.Service.Engine.Interfaces;
+using NinjaSecurity.Service.Engine.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
-namespace AppName.Service.Engine;
+namespace NinjaSecurity.Service.Engine;
 
 public class SystemOptimizer : ISystemOptimizer
 {

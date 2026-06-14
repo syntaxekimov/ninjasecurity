@@ -1,7 +1,7 @@
-using AppName.Service.Data.Entities;
+using NinjaSecurity.Service.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace AppName.Service.Data;
+namespace NinjaSecurity.Service.Data;
 
 public class AppDbContext : DbContext
 {

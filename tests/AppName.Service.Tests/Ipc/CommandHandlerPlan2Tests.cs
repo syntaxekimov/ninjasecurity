@@ -1,9 +1,9 @@
-using AppName.Service.Engine.Interfaces;
-using AppName.Service.Ipc;
+using NinjaSecurity.Service.Engine.Interfaces;
+using NinjaSecurity.Service.Ipc;
 using Moq;
 using System.Text.Json;
 
-namespace AppName.Service.Tests.Ipc;
+namespace NinjaSecurity.Service.Tests.Ipc;
 
 public class CommandHandlerPlan2Tests
 {
@@ -62,7 +62,7 @@ public class CommandHandlerPlan2Tests
     {
         var procMock = new Mock<IProcessMonitor>();
         procMock.Setup(p => p.GetProcessesAsync(default))
-            .ReturnsAsync(new List<AppName.Service.Engine.Models.ProcessInfo>());
+            .ReturnsAsync(new List<NinjaSecurity.Service.Engine.Models.ProcessInfo>());
         var handler = BuildHandler(procMon: procMock);
 
         var response = await handler.HandleAsync(new IpcRequest("GetProcessList"));

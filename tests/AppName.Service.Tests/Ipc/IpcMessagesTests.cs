@@ -1,7 +1,7 @@
-using AppName.Service.Ipc;
+using NinjaSecurity.Service.Ipc;
 using System.Text.Json;
 
-namespace AppName.Service.Tests.Ipc;
+namespace NinjaSecurity.Service.Tests.Ipc;
 
 public class IpcMessagesTests
 {

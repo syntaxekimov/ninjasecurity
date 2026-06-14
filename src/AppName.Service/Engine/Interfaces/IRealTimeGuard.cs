@@ -1,4 +1,4 @@
-namespace AppName.Service.Engine.Interfaces;
+namespace NinjaSecurity.Service.Engine.Interfaces;
 
 public interface IRealTimeGuard
 {

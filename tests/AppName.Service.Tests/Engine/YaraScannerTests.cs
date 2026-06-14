@@ -1,7 +1,7 @@
-using AppName.Service.Engine.Interfaces;
+using NinjaSecurity.Service.Engine.Interfaces;
 using Moq;
 
-namespace AppName.Service.Tests.Engine;
+namespace NinjaSecurity.Service.Tests.Engine;
 
 public class YaraScannerTests
 {
@@ -21,7 +21,7 @@ public class YaraScannerTests
     [Fact]
     public async Task ScanAsync_WhenNoRulesDirectory_ReturnsClean()
     {
-        var scanner = new AppName.Service.Engine.YaraScanner("/nonexistent/path");
+        var scanner = new NinjaSecurity.Service.Engine.YaraScanner("/nonexistent/path");
 
         var result = await scanner.ScanAsync("anyfile.exe");
 

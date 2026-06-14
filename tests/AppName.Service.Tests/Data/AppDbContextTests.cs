@@ -1,8 +1,8 @@
-using AppName.Service.Data;
-using AppName.Service.Data.Entities;
+using NinjaSecurity.Service.Data;
+using NinjaSecurity.Service.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace AppName.Service.Tests.Data;
+namespace NinjaSecurity.Service.Tests.Data;
 
 public class AppDbContextTests
 {

@@ -1,9 +1,9 @@
-using AppName.Service.Data;
-using AppName.Service.Engine;
-using AppName.Service.Engine.Models;
+using NinjaSecurity.Service.Data;
+using NinjaSecurity.Service.Engine;
+using NinjaSecurity.Service.Engine.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace AppName.Service.Tests.Engine;
+namespace NinjaSecurity.Service.Tests.Engine;
 
 public class QuarantineManagerTests : IDisposable
 {

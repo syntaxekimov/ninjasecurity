@@ -5,6 +5,10 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-AppName.Service-9c86dad4-9ede-4fd4-ad2e-58ac5a4b8729</UserSecretsId>
+    <AssemblyName>NinjaSecurity.Service</AssemblyName>
+    <RootNamespace>NinjaSecurity.Service</RootNamespace>
+    <Product>Ninja Security</Product>
+    <AssemblyTitle>Ninja Security</AssemblyTitle>
   </PropertyGroup>
 
   <ItemGroup>

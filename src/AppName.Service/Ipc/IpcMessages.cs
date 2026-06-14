@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace AppName.Service.Ipc;
+namespace NinjaSecurity.Service.Ipc;
 
 public record IpcRequest(string Command, JsonElement? Payload = null);
 

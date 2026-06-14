@@ -1,7 +1,7 @@
-using AppName.Service.Engine.Interfaces;
+using NinjaSecurity.Service.Engine.Interfaces;
 using Moq;
 
-namespace AppName.Service.Tests.Engine;
+namespace NinjaSecurity.Service.Tests.Engine;
 
 public class ClamAvScannerTests
 {

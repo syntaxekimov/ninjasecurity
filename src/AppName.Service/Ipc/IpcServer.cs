@@ -4,11 +4,11 @@ using System.IO.Pipes;
 using System.Text;
 using System.Text.Json;
 
-namespace AppName.Service.Ipc;
+namespace NinjaSecurity.Service.Ipc;
 
 public class IpcServer
 {
-    public const string PipeName = "AppName.Security.IPC";
+    public const string PipeName = "NinjaSecurity.IPC";
 
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<IpcServer> _logger;

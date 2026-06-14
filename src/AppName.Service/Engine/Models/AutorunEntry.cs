@@ -1,4 +1,4 @@
-namespace AppName.Service.Engine.Models;
+namespace NinjaSecurity.Service.Engine.Models;
 
 public record AutorunEntry(
     string Id,

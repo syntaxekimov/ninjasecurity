@@ -1,8 +1,8 @@
-using AppName.Service.Engine;
-using AppName.Service.Engine.Interfaces;
+using NinjaSecurity.Service.Engine;
+using NinjaSecurity.Service.Engine.Interfaces;
 using Moq;
 
-namespace AppName.Service.Tests.Engine;
+namespace NinjaSecurity.Service.Tests.Engine;
 
 public class SystemOptimizerTests
 {

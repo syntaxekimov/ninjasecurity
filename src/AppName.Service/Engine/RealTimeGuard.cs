@@ -1,8 +1,8 @@
-using AppName.Service.Engine.Interfaces;
+using NinjaSecurity.Service.Engine.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace AppName.Service.Engine;
+namespace NinjaSecurity.Service.Engine;
 
 public class RealTimeGuard : IRealTimeGuard
 {

@@ -1,7 +1,7 @@
-using AppName.Service.Data.Entities;
-using AppName.Service.Engine.Models;
+using NinjaSecurity.Service.Data.Entities;
+using NinjaSecurity.Service.Engine.Models;
 
-namespace AppName.Service.Engine.Interfaces;
+namespace NinjaSecurity.Service.Engine.Interfaces;
 
 public interface IQuarantineManager
 {

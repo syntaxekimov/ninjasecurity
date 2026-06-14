@@ -1,4 +1,4 @@
-namespace AppName.Service.Engine;
+namespace NinjaSecurity.Service.Engine;
 
 public class RansomwareDetector
 {

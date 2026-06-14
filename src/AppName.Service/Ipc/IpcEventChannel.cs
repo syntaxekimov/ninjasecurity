@@ -4,11 +4,11 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
 
-namespace AppName.Service.Ipc;
+namespace NinjaSecurity.Service.Ipc;
 
 public class IpcEventChannel
 {
-    public const string EventPipeName = "AppName.Security.Events";
+    public const string EventPipeName = "NinjaSecurity.Events";
 
     private readonly ILogger<IpcEventChannel> _logger;
     private readonly Channel<IpcEvent> _queue;

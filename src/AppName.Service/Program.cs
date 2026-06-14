@@ -1,8 +1,8 @@
-using AppName.Service;
-using AppName.Service.Data;
-using AppName.Service.Engine;
-using AppName.Service.Engine.Interfaces;
-using AppName.Service.Ipc;
+using NinjaSecurity.Service;
+using NinjaSecurity.Service.Data;
+using NinjaSecurity.Service.Engine;
+using NinjaSecurity.Service.Engine.Interfaces;
+using NinjaSecurity.Service.Ipc;
 using Microsoft.EntityFrameworkCore;
 
 Directory.CreateDirectory(AppPaths.AppData);
@@ -12,7 +12,7 @@ Directory.CreateDirectory(AppPaths.YaraRulesPath);
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.Services.AddWindowsService(opt => opt.ServiceName = "AppName Security");
+builder.Services.AddWindowsService(opt => opt.ServiceName = "Ninja Security");
 
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlite($"Data Source={AppPaths.DatabasePath}"));

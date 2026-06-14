@@ -1,6 +1,6 @@
 using Microsoft.Data.Sqlite;
 
-namespace AppName.Service.Engine;
+namespace NinjaSecurity.Service.Engine;
 
 public class HashChecker
 {

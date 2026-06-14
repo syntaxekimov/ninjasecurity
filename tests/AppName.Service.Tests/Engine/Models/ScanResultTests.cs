@@ -1,6 +1,6 @@
-using AppName.Service.Engine.Models;
+using NinjaSecurity.Service.Engine.Models;
 
-namespace AppName.Service.Tests.Engine.Models;
+namespace NinjaSecurity.Service.Tests.Engine.Models;
 
 public class ScanResultTests
 {

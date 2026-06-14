@@ -1,4 +1,4 @@
-namespace AppName.Service.Data.Entities;
+namespace NinjaSecurity.Service.Data.Entities;
 
 public class QuarantineEntry
 {

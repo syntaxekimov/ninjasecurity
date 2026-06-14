@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- Background circle -->
+  <circle cx="128" cy="128" r="128" fill="#0D0D0D"/>
+
+  <!-- Shuriken blades (4-pointed star) -->
+  <g fill="#E8E8E8" transform="translate(128,128)">
+    <!-- Top-right blade -->
+    <polygon points="0,-72 18,-18 72,0 18,-18" />
+    <!-- Bottom-right blade -->
+    <polygon points="72,0 18,18 0,72 18,18" />
+    <!-- Bottom-left blade -->
+    <polygon points="0,72 -18,18 -72,0 -18,18" />
+    <!-- Top-left blade -->
+    <polygon points="-72,0 -18,-18 0,-72 -18,-18" />
+  </g>
+
+  <!-- Inner rotation ring -->
+  <circle cx="128" cy="128" r="22" fill="#1A1A1A" stroke="#E8E8E8" stroke-width="2"/>
+
+  <!-- Red center dot -->
+  <circle cx="128" cy="128" r="10" fill="#FF2020"/>
+
+  <!-- Subtle outer ring -->
+  <circle cx="128" cy="128" r="120" fill="none" stroke="#E8E8E8" stroke-width="1.5" stroke-dasharray="8,6" opacity="0.4"/>
+</svg>

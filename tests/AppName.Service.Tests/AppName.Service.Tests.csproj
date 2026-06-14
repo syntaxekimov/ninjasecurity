@@ -7,6 +7,7 @@
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <RootNamespace>NinjaSecurity.Service.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

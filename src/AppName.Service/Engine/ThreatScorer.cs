@@ -1,6 +1,6 @@
-using AppName.Service.Engine.Models;
+using NinjaSecurity.Service.Engine.Models;
 
-namespace AppName.Service.Engine;
+namespace NinjaSecurity.Service.Engine;
 
 public class ThreatScorer
 {

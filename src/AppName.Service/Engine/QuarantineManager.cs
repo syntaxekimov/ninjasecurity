@@ -1,11 +1,11 @@
-using AppName.Service.Data;
-using AppName.Service.Data.Entities;
-using AppName.Service.Engine.Interfaces;
-using AppName.Service.Engine.Models;
+using NinjaSecurity.Service.Data;
+using NinjaSecurity.Service.Data.Entities;
+using NinjaSecurity.Service.Engine.Interfaces;
+using NinjaSecurity.Service.Engine.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
-namespace AppName.Service.Engine;
+namespace NinjaSecurity.Service.Engine;
 
 public class QuarantineManager : IQuarantineManager
 {

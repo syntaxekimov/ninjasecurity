@@ -1,6 +1,6 @@
-using AppName.Service.Engine;
+using NinjaSecurity.Service.Engine;
 
-namespace AppName.Service.Tests.Engine;
+namespace NinjaSecurity.Service.Tests.Engine;
 
 public class HashCheckerTests : IDisposable
 {

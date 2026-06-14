@@ -1,8 +1,8 @@
-using AppName.Service.Engine.Interfaces;
-using AppName.Service.Ipc;
+using NinjaSecurity.Service.Engine.Interfaces;
+using NinjaSecurity.Service.Ipc;
 using System.Text.Json;
 
-namespace AppName.Service;
+namespace NinjaSecurity.Service;
 
 public class Worker : BackgroundService
 {
@@ -28,7 +28,7 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("AppName Security Service starting...");
+        _logger.LogInformation("Ninja Security Service starting...");
 
         _realTimeGuard.ThreatDetected += OnThreatDetected;
         _realTimeGuard.Start();
@@ -43,7 +43,7 @@ public class Worker : BackgroundService
         _realTimeGuard.Stop();
         _processMonitor.Stop();
 
-        _logger.LogInformation("AppName Security Service stopped.");
+        _logger.LogInformation("Ninja Security Service stopped.");
     }
 
     private void OnThreatDetected(object? sender, string filePath) =>

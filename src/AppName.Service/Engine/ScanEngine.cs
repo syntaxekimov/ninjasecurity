@@ -1,8 +1,8 @@
-using AppName.Service.Engine.Interfaces;
-using AppName.Service.Engine.Models;
+using NinjaSecurity.Service.Engine.Interfaces;
+using NinjaSecurity.Service.Engine.Models;
 using System.Security.Cryptography;
 
-namespace AppName.Service.Engine;
+namespace NinjaSecurity.Service.Engine;
 
 public class ScanEngine : IScanEngine
 {
