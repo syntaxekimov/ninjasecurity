@@ -47,6 +47,18 @@
 
         <Rectangle DockPanel.Dock="Top" Fill="#2A2A2A" Height="1" />
 
+        <!-- Service status -->
+        <Border DockPanel.Dock="Bottom" Padding="12,8" Background="#0D0D0D">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Ellipse Width="8" Height="8" Fill="#22CC55" VerticalAlignment="Center"
+                     IsVisible="{Binding ServiceConnected}" />
+            <Ellipse Width="8" Height="8" Fill="#CC2222" VerticalAlignment="Center"
+                     IsVisible="{Binding !ServiceConnected}" />
+            <TextBlock Text="{Binding ServiceStatusText}" FontSize="11"
+                       Foreground="#666666" VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+
         <!-- Nav buttons -->
         <StackPanel DockPanel.Dock="Top" Margin="8,8,8,0" Spacing="2">
 

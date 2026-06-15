@@ -14,6 +14,12 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private string _selectedSection = "Dashboard";
 
+    [ObservableProperty]
+    private bool _serviceConnected;
+
+    [ObservableProperty]
+    private string _serviceStatusText = "Проверка...";
+
     public DashboardViewModel Dashboard { get; }
     public ScanViewModel Scan { get; }
     public QuarantineViewModel Quarantine { get; }
@@ -30,6 +36,7 @@ public partial class MainWindowViewModel : ObservableObject
         Optimizer = new OptimizerViewModel(_ipc);
         Settings = new SettingsViewModel(_ipc);
         CurrentPage = Dashboard;
+        _ = MonitorServiceAsync();
     }
 
     [RelayCommand]
@@ -46,5 +53,17 @@ public partial class MainWindowViewModel : ObservableObject
             "Settings"   => Settings,
             _            => Dashboard
         };
+    }
+
+    private async Task MonitorServiceAsync()
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
+        do
+        {
+            var response = await _ipc.SendAsync("GetStatus");
+            ServiceConnected = response.Success;
+            ServiceStatusText = response.Success ? "Сервис активен" : "Сервис недоступен";
+        }
+        while (await timer.WaitForNextTickAsync());
     }
 }
