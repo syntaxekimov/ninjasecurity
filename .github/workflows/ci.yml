@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore AppName.sln
+
+      - name: Build
+        run: dotnet build AppName.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test tests/AppName.Service.Tests -c Release --no-build -v minimal

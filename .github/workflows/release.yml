@@ -1,0 +1,91 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-installer:
+    name: Build Installer
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # Extract version from tag safely via env var (no injection)
+      - name: Extract version
+        id: ver
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        shell: pwsh
+        run: |
+          $version = $env:REF_NAME -replace '^v', ''
+          "VERSION=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Publish Service (win-x64, self-contained)
+        env:
+          VER: ${{ steps.ver.outputs.VERSION }}
+        shell: pwsh
+        run: |
+          dotnet publish src/AppName.Service/AppName.Service.csproj `
+            -c Release -r win-x64 --self-contained true `
+            "-p:Version=$env:VER" "-p:AssemblyVersion=$env:VER" `
+            -o publish/service
+
+      - name: Publish App (win-x64, self-contained)
+        env:
+          VER: ${{ steps.ver.outputs.VERSION }}
+        shell: pwsh
+        run: |
+          dotnet publish src/NinjaSecurity.App/NinjaSecurity.App.csproj `
+            -c Release -r win-x64 --self-contained true `
+            "-p:Version=$env:VER" "-p:AssemblyVersion=$env:VER" `
+            -o publish/app
+
+      # Convert SVG icon → multi-size ICO using ImageMagick (pre-installed on windows-latest)
+      - name: Generate ICO from SVG
+        shell: pwsh
+        run: |
+          magick convert -background none assets/ninja-security.svg `
+            -define icon:auto-resize="256,128,96,64,48,32,16" `
+            assets/ninja-security.ico
+
+      - name: Install NSIS
+        shell: pwsh
+        run: choco install nsis --no-progress -y
+
+      - name: Build installer with NSIS
+        env:
+          VER: ${{ steps.ver.outputs.VERSION }}
+        shell: pwsh
+        run: |
+          $nsis = "C:\Program Files (x86)\NSIS\makensis.exe"
+          & $nsis "/DAPP_VERSION=$env:VER" installer/ninja-security.nsi
+          if ($LASTEXITCODE -ne 0) { throw "makensis failed with exit code $LASTEXITCODE" }
+
+      - name: Generate SHA-256
+        env:
+          VER: ${{ steps.ver.outputs.VERSION }}
+        shell: pwsh
+        run: |
+          $file = "NinjaSecuritySetup-$env:VER.exe"
+          $hash = (Get-FileHash $file -Algorithm SHA256).Hash
+          "$hash  $file" | Out-File -FilePath SHA256SUMS.txt -Encoding utf8
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Ninja Security ${{ steps.ver.outputs.VERSION }}
+          generate_release_notes: true
+          files: |
+            NinjaSecuritySetup-${{ steps.ver.outputs.VERSION }}.exe
+            SHA256SUMS.txt
