@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C57B8245
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NinjaSecurity.Service.Tests", "tests\AppName.Service.Tests\AppName.Service.Tests.csproj", "{2FE584B5-2B8A-4DAA-9775-28AA164BEDD3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NinjaSecurity.App", "src\NinjaSecurity.App\NinjaSecurity.App.csproj", "{016CE36B-8392-4B9A-86C0-1D168BF3190C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,9 +30,14 @@ Global
 		{2FE584B5-2B8A-4DAA-9775-28AA164BEDD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FE584B5-2B8A-4DAA-9775-28AA164BEDD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FE584B5-2B8A-4DAA-9775-28AA164BEDD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{016CE36B-8392-4B9A-86C0-1D168BF3190C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{016CE36B-8392-4B9A-86C0-1D168BF3190C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{016CE36B-8392-4B9A-86C0-1D168BF3190C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{016CE36B-8392-4B9A-86C0-1D168BF3190C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3F477448-CF8A-4048-95B5-49361F33DEE2} = {05C2CC8E-744F-43F6-A541-5C0860B54891}
 		{2FE584B5-2B8A-4DAA-9775-28AA164BEDD3} = {C57B8245-9FC9-4DBA-94EB-8CBE80ECB046}
+		{016CE36B-8392-4B9A-86C0-1D168BF3190C} = {05C2CC8E-744F-43F6-A541-5C0860B54891}
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,12 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="NinjaSecurity.App.Views.MainWindow"
+        Title="Ninja Security"
+        Width="1100" Height="700"
+        Background="#1A1A1A">
+  <TextBlock Text="Ninja Security"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center"
+             Foreground="White"
+             FontSize="32" />
+</Window>
