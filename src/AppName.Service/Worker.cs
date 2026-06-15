@@ -1,3 +1,4 @@
+using NinjaSecurity.Service.Engine;
 using NinjaSecurity.Service.Engine.Interfaces;
 using NinjaSecurity.Service.Ipc;
 using System.Text.Json;
@@ -10,6 +11,7 @@ public class Worker : BackgroundService
     private readonly IpcEventChannel _eventChannel;
     private readonly IRealTimeGuard _realTimeGuard;
     private readonly IProcessMonitor _processMonitor;
+    private readonly ScanScheduler _scheduler;
     private readonly ILogger<Worker> _logger;
 
     public Worker(
@@ -17,12 +19,14 @@ public class Worker : BackgroundService
         IpcEventChannel eventChannel,
         IRealTimeGuard realTimeGuard,
         IProcessMonitor processMonitor,
+        ScanScheduler scheduler,
         ILogger<Worker> logger)
     {
         _ipcServer = ipcServer;
         _eventChannel = eventChannel;
         _realTimeGuard = realTimeGuard;
         _processMonitor = processMonitor;
+        _scheduler = scheduler;
         _logger = logger;
     }
 
@@ -36,7 +40,8 @@ public class Worker : BackgroundService
 
         await Task.WhenAll(
             _ipcServer.RunAsync(stoppingToken),
-            _eventChannel.RunAsync(stoppingToken)
+            _eventChannel.RunAsync(stoppingToken),
+            _scheduler.RunAsync(stoppingToken)
         );
 
         _realTimeGuard.ThreatDetected -= OnThreatDetected;

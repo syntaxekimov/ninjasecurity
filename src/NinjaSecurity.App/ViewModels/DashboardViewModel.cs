@@ -12,6 +12,8 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty] private string _statusText = "Подключение к сервису...";
     [ObservableProperty] private bool _serviceConnected;
     [ObservableProperty] private int _threatsFound;
+    [ObservableProperty] private int _quarantineCount;
+    [ObservableProperty] private string _lastScanText = "—";
 
     public DashboardViewModel(IpcClient ipc)
     {
@@ -24,16 +26,29 @@ public partial class DashboardViewModel : ObservableObject
         var response = await _ipc.SendAsync("GetStatus");
         ServiceConnected = response.Success;
 
-        if (response.Success)
-        {
-            var rtResponse = await _ipc.SendAsync("GetRealTimeStatus");
-            if (rtResponse.Success && rtResponse.Data.HasValue)
-                RealTimeEnabled = rtResponse.Data.Value.GetProperty("enabled").GetBoolean();
-            StatusText = RealTimeEnabled ? "Защита активна" : "Защита отключена";
-        }
-        else
+        if (!response.Success)
         {
             StatusText = "Сервис недоступен";
+            return;
+        }
+
+        var rtResponse = await _ipc.SendAsync("GetRealTimeStatus");
+        if (rtResponse.Success && rtResponse.Data.HasValue)
+            RealTimeEnabled = rtResponse.Data.Value.GetProperty("enabled").GetBoolean();
+
+        StatusText = RealTimeEnabled ? "Защита активна" : "Защита отключена";
+
+        var statsResponse = await _ipc.SendAsync("GetDashboardStats");
+        if (statsResponse.Success && statsResponse.Data.HasValue)
+        {
+            var d = statsResponse.Data.Value;
+            QuarantineCount = d.GetProperty("quarantineCount").GetInt32();
+            if (d.TryGetProperty("lastScanUtc", out var lastScan) &&
+                lastScan.ValueKind != System.Text.Json.JsonValueKind.Null &&
+                DateTime.TryParse(lastScan.GetString(), out var dt))
+            {
+                LastScanText = dt.ToLocalTime().ToString("dd.MM HH:mm");
+            }
         }
     }
 
@@ -60,6 +75,7 @@ public partial class DashboardViewModel : ObservableObject
             StatusText = ThreatsFound > 0
                 ? $"Найдено угроз: {ThreatsFound}"
                 : "Угрозы не обнаружены ✓";
+            LastScanText = DateTime.Now.ToString("dd.MM HH:mm");
         }
         else
         {

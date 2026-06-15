@@ -4,6 +4,7 @@
   <ScrollViewer>
     <StackPanel Margin="40" Spacing="24">
 
+      <!-- Status card -->
       <Border Classes="Card">
         <StackPanel Spacing="16" HorizontalAlignment="Center">
           <TextBlock Text="⚔" FontSize="64" HorizontalAlignment="Center"
@@ -21,6 +22,7 @@
         </StackPanel>
       </Border>
 
+      <!-- Stats row -->
       <Grid ColumnDefinitions="*,16,*,16,*">
         <Border Grid.Column="0" Classes="StatCard">
           <StackPanel HorizontalAlignment="Center" Spacing="4">
@@ -32,22 +34,24 @@
         </Border>
         <Border Grid.Column="2" Classes="StatCard">
           <StackPanel HorizontalAlignment="Center" Spacing="4">
-            <TextBlock Text="●" FontSize="32" HorizontalAlignment="Center"
-                       Foreground="#22CC55" />
-            <TextBlock Text="Защита" Foreground="#888" FontSize="12"
+            <TextBlock Text="{Binding QuarantineCount}" FontSize="32" FontWeight="Bold"
+                       Foreground="#E8A020" HorizontalAlignment="Center" />
+            <TextBlock Text="В карантине" Foreground="#888" FontSize="12"
                        HorizontalAlignment="Center" />
           </StackPanel>
         </Border>
         <Border Grid.Column="4" Classes="StatCard">
           <StackPanel HorizontalAlignment="Center" Spacing="4">
-            <TextBlock Text="⚡" FontSize="32" HorizontalAlignment="Center"
-                       Foreground="#E8E8E8" />
-            <TextBlock Text="Мониторинг" Foreground="#888" FontSize="12"
+            <TextBlock Text="{Binding LastScanText}" FontSize="18" FontWeight="Bold"
+                       Foreground="#CCCCCC" HorizontalAlignment="Center"
+                       VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBlock Text="Последнее сканирование" Foreground="#888" FontSize="12"
                        HorizontalAlignment="Center" />
           </StackPanel>
         </Border>
       </Grid>
 
+      <!-- Actions -->
       <Button Command="{Binding QuickScanCommand}"
               HorizontalAlignment="Stretch"
               Classes="PrimaryButton"

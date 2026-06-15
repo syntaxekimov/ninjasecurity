@@ -34,6 +34,7 @@
         <DataGridTextColumn Header="Имя" Binding="{Binding Name}" Width="160" />
         <DataGridTextColumn Header="Путь" Binding="{Binding ImagePath}" Width="*" />
         <DataGridTextColumn Header="Место" Binding="{Binding Location}" Width="140" />
+        <DataGridCheckBoxColumn Header="Включён" Binding="{Binding IsEnabled}" Width="70" IsReadOnly="False" />
         <DataGridCheckBoxColumn Header="Подпись" Binding="{Binding IsSigned}" Width="70" />
         <DataGridTextColumn Header="Риск" Binding="{Binding RiskScore}" Width="60" />
       </DataGrid.Columns>

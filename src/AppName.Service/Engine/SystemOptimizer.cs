@@ -22,15 +22,15 @@ public class SystemOptimizer : ISystemOptimizer
         _logger = logger;
     }
 
-    public async Task<IReadOnlyList<AutorunEntry>> GetAutostartEntriesAsync(CancellationToken ct = default)
+    public Task<IReadOnlyList<AutorunEntry>> GetAutostartEntriesAsync(CancellationToken ct = default)
     {
         if (!OperatingSystem.IsWindows())
-            return [];
+            return Task.FromResult<IReadOnlyList<AutorunEntry>>([]);
 
         var entries = new List<AutorunEntry>();
         entries.AddRange(GetRegistryEntries());
         entries.AddRange(GetStartupFolderEntries());
-        return entries;
+        return Task.FromResult<IReadOnlyList<AutorunEntry>>(entries);
     }
 
     public Task SetAutostartEnabledAsync(string entryId, bool enabled, CancellationToken ct = default)

@@ -48,4 +48,16 @@ public partial class OptimizerViewModel : ObservableObject
 
     [RelayCommand]
     private Task Refresh() => LoadAsync();
+
+    [RelayCommand]
+    private async Task ToggleAutorun(AutorunItem? item)
+    {
+        if (item is null) return;
+        var response = await _ipc.SendAsync("SetAutostartEnabled",
+            new { EntryId = item.Id, Enabled = !item.IsEnabled });
+        if (response.Success)
+            await LoadAsync();
+        else
+            StatusText = $"Ошибка: {response.Error}";
+    }
 }

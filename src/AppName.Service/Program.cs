@@ -41,6 +41,7 @@ builder.Services.AddSingleton<ISystemOptimizer, SystemOptimizer>();
 builder.Services.AddSingleton<IUpdateService, UpdateService>();
 builder.Services.AddSingleton<RansomwareDetector>();
 builder.Services.AddSingleton<IpcEventChannel>();
+builder.Services.AddSingleton<ScanScheduler>();
 builder.Services.AddHttpClient<UpdateService>();
 
 builder.Services.AddHostedService<Worker>();

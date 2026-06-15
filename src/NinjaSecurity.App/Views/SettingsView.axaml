@@ -5,6 +5,7 @@
     <StackPanel Margin="32" Spacing="20">
       <TextBlock Text="Настройки" FontSize="24" FontWeight="Bold" Foreground="White" />
 
+      <!-- Real-time protection -->
       <Border Classes="Card" Padding="20">
         <StackPanel Spacing="10">
           <TextBlock Text="Защита в реальном времени" FontSize="14"
@@ -19,6 +20,50 @@
         </StackPanel>
       </Border>
 
+      <!-- Scan schedule -->
+      <Border Classes="Card" Padding="20">
+        <StackPanel Spacing="12">
+          <TextBlock Text="Расписание сканирования" FontSize="14"
+                     FontWeight="SemiBold" Foreground="White" />
+
+          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+            <ToggleButton IsChecked="{Binding ScheduleEnabled}" Classes="RedToggle">
+              <TextBlock Text="{Binding ScheduleEnabled,
+                               Converter={StaticResource BoolToStringConverter},
+                               ConverterParameter='Включено|Выключено'}" />
+            </ToggleButton>
+          </StackPanel>
+
+          <StackPanel Spacing="6" IsEnabled="{Binding ScheduleEnabled}">
+            <TextBlock Text="Периодичность:" Foreground="#888" FontSize="12" />
+            <StackPanel Orientation="Horizontal" Spacing="16">
+              <RadioButton GroupName="Interval" IsChecked="{Binding ScheduleDaily}"
+                           Foreground="#CCC" Content="Ежедневно" />
+              <RadioButton GroupName="Interval" IsChecked="{Binding ScheduleWeekly}"
+                           Foreground="#CCC" Content="Еженедельно" />
+            </StackPanel>
+
+            <TextBlock Text="Тип сканирования:" Foreground="#888" FontSize="12" Margin="0,4,0,0" />
+            <StackPanel Orientation="Horizontal" Spacing="16">
+              <RadioButton GroupName="ScanType" IsChecked="{Binding ScheduleScanQuick}"
+                           Foreground="#CCC" Content="Быстрое" />
+              <RadioButton GroupName="ScanType" IsChecked="{Binding ScheduleScanFull}"
+                           Foreground="#CCC" Content="Полное" />
+            </StackPanel>
+
+            <TextBlock Foreground="#666" FontSize="11"
+                       Text="{Binding LastScanText, StringFormat='Последнее сканирование: {0}'}" />
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <Button Command="{Binding SaveScheduleCommand}"
+                    Classes="PrimaryButton" Content="💾 Сохранить расписание" />
+            <TextBlock Text="{Binding StatusText}" Foreground="#888" VerticalAlignment="Center" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- Signature update -->
       <Border Classes="Card" Padding="20">
         <StackPanel Spacing="10">
           <TextBlock Text="Обновление баз" FontSize="14"
@@ -26,18 +71,23 @@
           <StackPanel Orientation="Horizontal" Spacing="12">
             <Button Command="{Binding UpdateSignaturesCommand}"
                     Classes="PrimaryButton" Content="⬇ Обновить сигнатуры" />
-            <TextBlock Text="{Binding StatusText}" Foreground="#888"
-                       VerticalAlignment="Center" />
           </StackPanel>
         </StackPanel>
       </Border>
 
+      <!-- App version + update check -->
       <Border Classes="Card" Padding="20">
-        <StackPanel Spacing="4">
+        <StackPanel Spacing="10">
           <TextBlock Text="О программе" FontSize="14"
                      FontWeight="SemiBold" Foreground="White" />
-          <TextBlock Text="{Binding AppVersion}" Foreground="#888" />
+          <TextBlock Text="{Binding AppVersion}" Foreground="#CCC" />
           <TextBlock Text="ClamAV + YARA + MalSearcher" Foreground="#666" FontSize="11" />
+          <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,4,0,0">
+            <Button Command="{Binding CheckForUpdatesCommand}"
+                    Classes="PrimaryButton" Content="🔄 Проверить обновления" />
+            <TextBlock Text="{Binding UpdateStatusText}" Foreground="#888"
+                       VerticalAlignment="Center" />
+          </StackPanel>
         </StackPanel>
       </Border>
 

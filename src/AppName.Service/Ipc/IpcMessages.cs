@@ -24,3 +24,6 @@ public record ScanCompletePayload(int ThreatsFound, int FilesScanned, TimeSpan D
 public record RealTimeAlertPayload(string FilePath, string? ThreatName, bool AutoQuarantined);
 
 public record SetRealTimePayload(bool Enabled);
+
+public record SetScanSchedulePayload(bool Enabled, string ScanType, int IntervalHours);
+public record SetAutostartPayload(string EntryId, bool Enabled);

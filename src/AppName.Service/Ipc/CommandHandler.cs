@@ -1,4 +1,6 @@
+using NinjaSecurity.Service.Engine;
 using NinjaSecurity.Service.Engine.Interfaces;
+using NinjaSecurity.Service.Engine.Models;
 using System.Text.Json;
 
 namespace NinjaSecurity.Service.Ipc;
@@ -11,6 +13,7 @@ public class CommandHandler
     private readonly IProcessMonitor _processMonitor;
     private readonly ISystemOptimizer _systemOptimizer;
     private readonly IUpdateService _updateService;
+    private readonly ScanScheduler _scheduler;
 
     public CommandHandler(
         IScanEngine scanEngine,
@@ -18,7 +21,8 @@ public class CommandHandler
         IRealTimeGuard realTimeGuard,
         IProcessMonitor processMonitor,
         ISystemOptimizer systemOptimizer,
-        IUpdateService updateService)
+        IUpdateService updateService,
+        ScanScheduler scheduler)
     {
         _scanEngine = scanEngine;
         _quarantine = quarantine;
@@ -26,6 +30,7 @@ public class CommandHandler
         _processMonitor = processMonitor;
         _systemOptimizer = systemOptimizer;
         _updateService = updateService;
+        _scheduler = scheduler;
     }
 
     public async Task<IpcResponse> HandleAsync(IpcRequest request, CancellationToken ct = default)
@@ -41,7 +46,12 @@ public class CommandHandler
             "GetProcessList"     => await HandleGetProcessListAsync(ct),
             "GetAutostartEntries"=> await HandleGetAutostartAsync(ct),
             "CleanTempFiles"     => await HandleCleanTempAsync(ct),
-            "UpdateSignatures"   => await HandleUpdateSignaturesAsync(ct),
+            "UpdateSignatures"    => await HandleUpdateSignaturesAsync(ct),
+            "GetScanSchedule"     => HandleGetScanSchedule(),
+            "SetScanSchedule"     => HandleSetScanSchedule(request),
+            "GetDashboardStats"   => await HandleGetDashboardStatsAsync(ct),
+            "SetAutostartEnabled" => await HandleSetAutostartEnabledAsync(request, ct),
+            "CheckAppUpdate"      => await HandleCheckAppUpdateAsync(ct),
             _ => IpcResponse.Fail($"Unknown command: {request.Command}")
         };
     }
@@ -173,5 +183,74 @@ public class CommandHandler
     {
         var ok = await _updateService.UpdateSignaturesAsync(ct);
         return ok ? IpcResponse.Ok() : IpcResponse.Fail("Signature update failed");
+    }
+
+    private IpcResponse HandleGetScanSchedule()
+    {
+        var cfg = _scheduler.Config;
+        return IpcResponse.Ok(JsonSerializer.SerializeToElement(new
+        {
+            cfg.Enabled,
+            cfg.ScanType,
+            cfg.IntervalHours,
+            LastRunUtc = cfg.LastRunUtc?.ToString("O")
+        }));
+    }
+
+    private IpcResponse HandleSetScanSchedule(IpcRequest request)
+    {
+        if (request.Payload is not JsonElement payload)
+            return IpcResponse.Fail("Payload required");
+        var args = payload.Deserialize<SetScanSchedulePayload>();
+        if (args is null) return IpcResponse.Fail("Invalid payload");
+
+        _scheduler.UpdateConfig(new ScanScheduleConfig
+        {
+            Enabled = args.Enabled,
+            ScanType = args.ScanType,
+            IntervalHours = args.IntervalHours,
+            LastRunUtc = _scheduler.Config.LastRunUtc
+        });
+        return IpcResponse.Ok();
+    }
+
+    private async Task<IpcResponse> HandleGetDashboardStatsAsync(CancellationToken ct)
+    {
+        var quarantine = await _quarantine.ListAsync(ct);
+        return IpcResponse.Ok(JsonSerializer.SerializeToElement(new
+        {
+            realTimeEnabled = _realTimeGuard.IsRunning,
+            quarantineCount = quarantine.Count,
+            lastScanUtc = _scheduler.Config.LastRunUtc?.ToString("O"),
+            scheduleEnabled = _scheduler.Config.Enabled
+        }));
+    }
+
+    private async Task<IpcResponse> HandleSetAutostartEnabledAsync(IpcRequest request, CancellationToken ct)
+    {
+        if (request.Payload is not JsonElement payload)
+            return IpcResponse.Fail("Payload required");
+        var args = payload.Deserialize<SetAutostartPayload>();
+        if (args is null) return IpcResponse.Fail("Invalid payload");
+        try
+        {
+            await _systemOptimizer.SetAutostartEnabledAsync(args.EntryId, args.Enabled, ct);
+            return IpcResponse.Ok();
+        }
+        catch (Exception ex)
+        {
+            return IpcResponse.Fail(ex.Message);
+        }
+    }
+
+    private async Task<IpcResponse> HandleCheckAppUpdateAsync(CancellationToken ct)
+    {
+        var info = await _updateService.CheckAppUpdateAsync(ct);
+        return IpcResponse.Ok(JsonSerializer.SerializeToElement(new
+        {
+            info.UpdateAvailable,
+            info.LatestVersion,
+            info.DownloadUrl
+        }));
     }
 }

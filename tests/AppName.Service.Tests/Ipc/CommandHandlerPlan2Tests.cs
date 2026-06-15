@@ -1,5 +1,7 @@
+using NinjaSecurity.Service.Engine;
 using NinjaSecurity.Service.Engine.Interfaces;
 using NinjaSecurity.Service.Ipc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System.Text.Json;
 
@@ -7,6 +9,10 @@ namespace NinjaSecurity.Service.Tests.Ipc;
 
 public class CommandHandlerPlan2Tests
 {
+    private static ScanScheduler BuildScheduler() =>
+        new(new Mock<IScanEngine>().Object,
+            new IpcEventChannel(NullLogger<IpcEventChannel>.Instance));
+
     private static CommandHandler BuildHandler(
         Mock<IRealTimeGuard>? rtGuard = null,
         Mock<IProcessMonitor>? procMon = null,
@@ -19,7 +25,8 @@ public class CommandHandlerPlan2Tests
             (rtGuard ?? new Mock<IRealTimeGuard>()).Object,
             (procMon ?? new Mock<IProcessMonitor>()).Object,
             (sysOpt ?? new Mock<ISystemOptimizer>()).Object,
-            (updSvc ?? new Mock<IUpdateService>()).Object);
+            (updSvc ?? new Mock<IUpdateService>()).Object,
+            BuildScheduler());
     }
 
     [Fact]

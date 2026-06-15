@@ -1,6 +1,7 @@
 using NinjaSecurity.Service.Engine.Interfaces;
 using NinjaSecurity.Service.Engine.Models;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace NinjaSecurity.Service.Engine;
 
@@ -31,6 +32,41 @@ public class UpdateService : IUpdateService
             YaraRulesAvailable: true,
             MalSearcherAvailable: true,
             LastChecked: DateTime.UtcNow));
+
+    public async Task<AppUpdateInfo> CheckAppUpdateAsync(CancellationToken ct = default)
+    {
+        if (_http is null)
+            return new AppUpdateInfo(false, null, null, null);
+
+        const string currentVersion = "1.0.0";
+        const string releasesUrl =
+            "https://api.github.com/repos/ninja-security/ninja-security/releases/latest";
+        try
+        {
+            using var req = new HttpRequestMessage(HttpMethod.Get, releasesUrl);
+            req.Headers.UserAgent.ParseAdd("NinjaSecurity/1.0");
+            var resp = await _http.SendAsync(req, ct);
+            if (!resp.IsSuccessStatusCode)
+                return new AppUpdateInfo(false, null, null, null);
+
+            await using var stream = await resp.Content.ReadAsStreamAsync(ct);
+            using var doc = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
+            var tag = doc.RootElement.GetProperty("tag_name").GetString()?.TrimStart('v');
+            var htmlUrl = doc.RootElement.GetProperty("html_url").GetString();
+            var body = doc.RootElement.TryGetProperty("body", out var b) ? b.GetString() : null;
+
+            var updateAvailable = tag is not null
+                && Version.TryParse(tag, out var latest)
+                && Version.TryParse(currentVersion, out var current)
+                && latest > current;
+
+            return new AppUpdateInfo(updateAvailable, tag, htmlUrl, body);
+        }
+        catch
+        {
+            return new AppUpdateInfo(false, null, null, null);
+        }
+    }
 
     public async Task<bool> UpdateSignaturesAsync(CancellationToken ct = default)
     {
