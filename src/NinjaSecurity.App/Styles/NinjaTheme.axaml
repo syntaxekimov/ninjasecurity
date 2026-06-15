@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dgr="using:Avalonia.Controls">
 
   <Style Selector="Button.NavButton">
     <Setter Property="Background" Value="Transparent" />
@@ -67,5 +68,13 @@
     <Setter Property="CornerRadius" Value="6" />
   </Style>
 
+
+  <Style Selector="DataGrid.DarkGrid">
+    <Setter Property="Background" Value="#1A1A1A" />
+    <Setter Property="RowBackground" Value="#1E1E1E" />
+    <Setter Property="GridLinesVisibility" Value="None" />
+    <Setter Property="Foreground" Value="#CCCCCC" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
 
 </Styles>

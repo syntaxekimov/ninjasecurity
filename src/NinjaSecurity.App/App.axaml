@@ -5,6 +5,7 @@
              RequestedThemeVariant="Dark">
   <Application.Styles>
     <FluentTheme />
+    <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
     <StyleInclude Source="avares://NinjaSecurity.App/Styles/NinjaTheme.axaml" />
   </Application.Styles>
   <Application.Resources>
