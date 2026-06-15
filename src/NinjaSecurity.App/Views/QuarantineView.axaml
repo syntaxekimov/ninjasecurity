@@ -1,6 +1,33 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="NinjaSecurity.App.Views.QuarantineView">
-  <TextBlock Text="Карантин" Foreground="White" FontSize="24"
-             HorizontalAlignment="Center" VerticalAlignment="Center" />
+  <DockPanel Margin="32">
+
+    <StackPanel DockPanel.Dock="Top" Spacing="8" Margin="0,0,0,16">
+      <TextBlock Text="Карантин" FontSize="24" FontWeight="Bold" Foreground="White" />
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <Button Command="{Binding RestoreCommand}" Content="↩ Восстановить"
+                IsEnabled="{Binding SelectedItem, Converter={x:Static ObjectConverters.IsNotNull}}" />
+        <Button Command="{Binding DeleteCommand}" Content="✕ Удалить"
+                Classes="DangerButton"
+                IsEnabled="{Binding SelectedItem, Converter={x:Static ObjectConverters.IsNotNull}}" />
+        <Button Command="{Binding RefreshCommand}" Content="↺ Обновить" />
+      </StackPanel>
+      <TextBlock Text="{Binding StatusText}" Foreground="#888" />
+    </StackPanel>
+
+    <DataGrid ItemsSource="{Binding Items}"
+              SelectedItem="{Binding SelectedItem}"
+              AutoGenerateColumns="False"
+              IsReadOnly="True"
+              Classes="DarkGrid">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Путь" Binding="{Binding OriginalPath}" Width="*" />
+        <DataGridTextColumn Header="Угроза" Binding="{Binding ThreatName}" Width="180" />
+        <DataGridTextColumn Header="Риск" Binding="{Binding ConfidenceScore}" Width="60" />
+        <DataGridTextColumn Header="Дата" Binding="{Binding QuarantinedAt}" Width="160" />
+      </DataGrid.Columns>
+    </DataGrid>
+
+  </DockPanel>
 </UserControl>

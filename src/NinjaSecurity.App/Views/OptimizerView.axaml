@@ -1,6 +1,43 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="NinjaSecurity.App.Views.OptimizerView">
-  <TextBlock Text="Оптимизатор" Foreground="White" FontSize="24"
-             HorizontalAlignment="Center" VerticalAlignment="Center" />
+  <DockPanel Margin="32">
+
+    <StackPanel DockPanel.Dock="Top" Spacing="12" Margin="0,0,0,20">
+      <TextBlock Text="Оптимизатор" FontSize="24" FontWeight="Bold" Foreground="White" />
+
+      <Border Classes="Card" Padding="20">
+        <StackPanel Spacing="8">
+          <TextBlock Text="Временные файлы" FontSize="14" FontWeight="SemiBold"
+                     Foreground="White" />
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <Button Command="{Binding CleanTempCommand}"
+                    Classes="PrimaryButton" Content="🗑 Очистить Temp" />
+            <TextBlock Text="{Binding StatusText}" Foreground="#888"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <TextBlock Text="Автозагрузка" FontSize="16" FontWeight="SemiBold"
+                   Foreground="White" VerticalAlignment="Center" />
+        <Button Command="{Binding RefreshCommand}" Content="↺" />
+      </StackPanel>
+    </StackPanel>
+
+    <DataGrid ItemsSource="{Binding AutorunEntries}"
+              AutoGenerateColumns="False"
+              IsReadOnly="True"
+              Classes="DarkGrid">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Имя" Binding="{Binding Name}" Width="160" />
+        <DataGridTextColumn Header="Путь" Binding="{Binding ImagePath}" Width="*" />
+        <DataGridTextColumn Header="Место" Binding="{Binding Location}" Width="140" />
+        <DataGridCheckBoxColumn Header="Подпись" Binding="{Binding IsSigned}" Width="70" />
+        <DataGridTextColumn Header="Риск" Binding="{Binding RiskScore}" Width="60" />
+      </DataGrid.Columns>
+    </DataGrid>
+
+  </DockPanel>
 </UserControl>

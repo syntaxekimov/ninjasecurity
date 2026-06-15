@@ -1,6 +1,31 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="NinjaSecurity.App.Views.ProcessView">
-  <TextBlock Text="Процессы" Foreground="White" FontSize="24"
-             HorizontalAlignment="Center" VerticalAlignment="Center" />
+  <DockPanel Margin="32">
+
+    <StackPanel DockPanel.Dock="Top" Spacing="8" Margin="0,0,0,16">
+      <TextBlock Text="Процессы" FontSize="24" FontWeight="Bold" Foreground="White" />
+      <StackPanel Orientation="Horizontal" Spacing="12">
+        <TextBox Text="{Binding FilterText}" Watermark="Поиск..." Width="240"
+                 Classes="DarkInput" />
+        <CheckBox Content="Высокий риск (≥50)" IsChecked="{Binding ShowHighRiskOnly}"
+                  Foreground="White" VerticalAlignment="Center" />
+        <Button Command="{Binding LoadCommand}" Content="↺ Обновить" />
+      </StackPanel>
+    </StackPanel>
+
+    <DataGrid ItemsSource="{Binding Processes}"
+              AutoGenerateColumns="False"
+              IsReadOnly="True"
+              Classes="DarkGrid">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="PID" Binding="{Binding Pid}" Width="60" />
+        <DataGridTextColumn Header="Имя" Binding="{Binding Name}" Width="160" />
+        <DataGridTextColumn Header="Путь" Binding="{Binding ExecutablePath}" Width="*" />
+        <DataGridCheckBoxColumn Header="Подпись" Binding="{Binding HasValidSignature}" Width="70" />
+        <DataGridTextColumn Header="Риск" Binding="{Binding RiskScore}" Width="60" />
+      </DataGrid.Columns>
+    </DataGrid>
+
+  </DockPanel>
 </UserControl>

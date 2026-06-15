@@ -1,6 +1,58 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="NinjaSecurity.App.Views.DashboardView">
-  <TextBlock Text="Dashboard" Foreground="White" FontSize="24"
-             HorizontalAlignment="Center" VerticalAlignment="Center" />
+  <ScrollViewer>
+    <StackPanel Margin="40" Spacing="24">
+
+      <Border Classes="Card">
+        <StackPanel Spacing="16" HorizontalAlignment="Center">
+          <TextBlock Text="⚔" FontSize="64" HorizontalAlignment="Center"
+                     Foreground="#CC2222" />
+          <TextBlock Text="{Binding StatusText}" FontSize="22" FontWeight="SemiBold"
+                     HorizontalAlignment="Center" Foreground="White" />
+          <ToggleButton IsChecked="{Binding RealTimeEnabled}"
+                        Command="{Binding ToggleRealTimeCommand}"
+                        HorizontalAlignment="Center"
+                        Classes="RedToggle">
+            <TextBlock Text="{Binding RealTimeEnabled,
+                             Converter={StaticResource BoolToStringConverter},
+                             ConverterParameter='RealTime Guard: ВКЛ|RealTime Guard: ВЫКЛ'}" />
+          </ToggleButton>
+        </StackPanel>
+      </Border>
+
+      <Grid ColumnDefinitions="*,16,*,16,*">
+        <Border Grid.Column="0" Classes="StatCard">
+          <StackPanel HorizontalAlignment="Center" Spacing="4">
+            <TextBlock Text="{Binding ThreatsFound}" FontSize="32" FontWeight="Bold"
+                       Foreground="#CC2222" HorizontalAlignment="Center" />
+            <TextBlock Text="Угроз найдено" Foreground="#888" FontSize="12"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+        </Border>
+        <Border Grid.Column="2" Classes="StatCard">
+          <StackPanel HorizontalAlignment="Center" Spacing="4">
+            <TextBlock Text="●" FontSize="32" HorizontalAlignment="Center"
+                       Foreground="#22CC55" />
+            <TextBlock Text="Защита" Foreground="#888" FontSize="12"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+        </Border>
+        <Border Grid.Column="4" Classes="StatCard">
+          <StackPanel HorizontalAlignment="Center" Spacing="4">
+            <TextBlock Text="⚡" FontSize="32" HorizontalAlignment="Center"
+                       Foreground="#E8E8E8" />
+            <TextBlock Text="Мониторинг" Foreground="#888" FontSize="12"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+        </Border>
+      </Grid>
+
+      <Button Command="{Binding QuickScanCommand}"
+              HorizontalAlignment="Stretch"
+              Classes="PrimaryButton"
+              Content="⚔  Быстрое сканирование" />
+
+    </StackPanel>
+  </ScrollViewer>
 </UserControl>
