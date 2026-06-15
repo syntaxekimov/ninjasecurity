@@ -14,10 +14,11 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      # Pinned to SHA — Dependabot (.github/dependabot.yml) keeps these updated
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
 
       - name: Setup .NET 8
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@6db8d8351a62dab7d77a5f9413b4d8de0e37f374  # v4.0.0
         with:
           dotnet-version: '8.0.x'
 
@@ -82,6 +83,9 @@ jobs:
           "$hash  $file" | Out-File -FilePath SHA256SUMS.txt -Encoding utf8
 
       - name: Create GitHub Release
+        # TODO: pin to SHA once repo is on GitHub — run:
+        #   gh api repos/softprops/action-gh-release/git/ref/tags/v2 --jq '.object.sha'
+        # Dependabot will pin and update this automatically after first weekly run.
         uses: softprops/action-gh-release@v2
         with:
           name: Ninja Security ${{ steps.ver.outputs.VERSION }}
