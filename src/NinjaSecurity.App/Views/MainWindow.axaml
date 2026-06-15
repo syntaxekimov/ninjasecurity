@@ -1,12 +1,109 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:NinjaSecurity.App.ViewModels"
+        xmlns:views="using:NinjaSecurity.App.Views"
         x:Class="NinjaSecurity.App.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
         Title="Ninja Security"
         Width="1100" Height="700"
+        MinWidth="900" MinHeight="600"
         Background="#1A1A1A">
-  <TextBlock Text="Ninja Security"
-             HorizontalAlignment="Center"
-             VerticalAlignment="Center"
-             Foreground="White"
-             FontSize="32" />
+
+  <Window.DataTemplates>
+    <DataTemplate DataType="vm:DashboardViewModel">
+      <views:DashboardView />
+    </DataTemplate>
+    <DataTemplate DataType="vm:ScanViewModel">
+      <views:ScanView />
+    </DataTemplate>
+    <DataTemplate DataType="vm:QuarantineViewModel">
+      <views:QuarantineView />
+    </DataTemplate>
+    <DataTemplate DataType="vm:ProcessViewModel">
+      <views:ProcessView />
+    </DataTemplate>
+    <DataTemplate DataType="vm:OptimizerViewModel">
+      <views:OptimizerView />
+    </DataTemplate>
+    <DataTemplate DataType="vm:SettingsViewModel">
+      <views:SettingsView />
+    </DataTemplate>
+  </Window.DataTemplates>
+
+  <Grid ColumnDefinitions="220,*">
+
+    <!-- Sidebar -->
+    <Border Grid.Column="0" Background="#141414">
+      <DockPanel>
+
+        <!-- Logo -->
+        <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Center"
+                    Margin="20,24,20,16" Spacing="4">
+          <TextBlock Text="&#x2694;" FontSize="28" Foreground="#CC2222"
+                     HorizontalAlignment="Center" />
+          <TextBlock Text="NINJA SECURITY" FontSize="11" FontWeight="Bold"
+                     Foreground="#AAAAAA" HorizontalAlignment="Center" />
+        </StackPanel>
+
+        <Rectangle DockPanel.Dock="Top" Fill="#2A2A2A" Height="1" />
+
+        <!-- Nav buttons -->
+        <StackPanel DockPanel.Dock="Top" Margin="8,8,8,0" Spacing="2">
+
+          <Button Command="{Binding NavigateCommand}" CommandParameter="Dashboard"
+                  Classes="NavButton">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="&#x2B21;" FontSize="15" Width="20" TextAlignment="Center" />
+              <TextBlock Text="Dashboard" />
+            </StackPanel>
+          </Button>
+
+          <Button Command="{Binding NavigateCommand}" CommandParameter="Scan"
+                  Classes="NavButton">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="&#x1F50D;" FontSize="15" Width="20" TextAlignment="Center" />
+              <TextBlock Text="&#1057;&#1082;&#1072;&#1085;&#1080;&#1088;&#1086;&#1074;&#1072;&#1085;&#1080;&#1077;" />
+            </StackPanel>
+          </Button>
+
+          <Button Command="{Binding NavigateCommand}" CommandParameter="Quarantine"
+                  Classes="NavButton">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="&#x1F512;" FontSize="15" Width="20" TextAlignment="Center" />
+              <TextBlock Text="&#1050;&#1072;&#1088;&#1072;&#1085;&#1090;&#1080;&#1085;" />
+            </StackPanel>
+          </Button>
+
+          <Button Command="{Binding NavigateCommand}" CommandParameter="Processes"
+                  Classes="NavButton">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="&#x1F4CB;" FontSize="15" Width="20" TextAlignment="Center" />
+              <TextBlock Text="&#1055;&#1088;&#1086;&#1094;&#1077;&#1089;&#1089;&#1099;" />
+            </StackPanel>
+          </Button>
+
+          <Button Command="{Binding NavigateCommand}" CommandParameter="Optimizer"
+                  Classes="NavButton">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="&#x1F6E1;" FontSize="15" Width="20" TextAlignment="Center" />
+              <TextBlock Text="&#1054;&#1087;&#1090;&#1080;&#1084;&#1080;&#1079;&#1072;&#1090;&#1086;&#1088;" />
+            </StackPanel>
+          </Button>
+
+          <Button Command="{Binding NavigateCommand}" CommandParameter="Settings"
+                  Classes="NavButton">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="&#x2699;" FontSize="15" Width="20" TextAlignment="Center" />
+              <TextBlock Text="&#1053;&#1072;&#1089;&#1090;&#1088;&#1086;&#1081;&#1082;&#1080;" />
+            </StackPanel>
+          </Button>
+
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <!-- Content area -->
+    <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" />
+
+  </Grid>
 </Window>

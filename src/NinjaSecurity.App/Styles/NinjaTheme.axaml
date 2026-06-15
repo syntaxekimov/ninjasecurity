@@ -1,3 +1,71 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Style Selector="Button.NavButton">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="#AAAAAA" />
+    <Setter Property="Padding" Value="12,10" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+  <Style Selector="Button.NavButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#252525" />
+    <Setter Property="TextElement.Foreground" Value="White" />
+  </Style>
+
+  <Style Selector="Border.Card">
+    <Setter Property="Background" Value="#222222" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="20" />
+  </Style>
+
+  <Style Selector="Border.StatCard">
+    <Setter Property="Background" Value="#1E1E1E" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="20,16" />
+  </Style>
+
+  <Style Selector="Button.PrimaryButton">
+    <Setter Property="Background" Value="#CC2222" />
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="Padding" Value="20,10" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+  <Style Selector="Button.PrimaryButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#AA1818" />
+  </Style>
+
+  <Style Selector="Button.DangerButton">
+    <Setter Property="Background" Value="#441111" />
+    <Setter Property="Foreground" Value="#FF4444" />
+    <Setter Property="Padding" Value="12,8" />
+    <Setter Property="CornerRadius" Value="6" />
+  </Style>
+
+  <Style Selector="ToggleButton.RedToggle">
+    <Setter Property="Background" Value="#333" />
+    <Setter Property="Foreground" Value="#888" />
+    <Setter Property="Padding" Value="16,8" />
+    <Setter Property="CornerRadius" Value="20" />
+  </Style>
+  <Style Selector="ToggleButton.RedToggle:checked /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#CC2222" />
+    <Setter Property="TextElement.Foreground" Value="White" />
+  </Style>
+
+  <Style Selector="TextBox.DarkInput">
+    <Setter Property="Background" Value="#1E1E1E" />
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="BorderBrush" Value="#333" />
+    <Setter Property="Padding" Value="10,6" />
+    <Setter Property="CornerRadius" Value="6" />
+  </Style>
+
+
 </Styles>
