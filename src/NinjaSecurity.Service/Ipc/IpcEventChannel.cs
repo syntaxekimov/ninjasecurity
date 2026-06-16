@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using System.IO.Pipes;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
@@ -44,13 +45,7 @@ public class IpcEventChannel
 
     private async Task AcceptAndStreamAsync(CancellationToken ct)
     {
-        // TODO(Plan 2 - security): apply PipeSecurity ACL (Administrators + SYSTEM only)
-        await using var pipe = new NamedPipeServerStream(
-            EventPipeName,
-            PipeDirection.Out,
-            1,
-            PipeTransmissionMode.Byte,
-            PipeOptions.Asynchronous);
+        await using var pipe = CreatePipe();
 
         _logger.LogInformation("Event channel waiting for GUI connection...");
         await pipe.WaitForConnectionAsync(ct);
@@ -65,4 +60,29 @@ public class IpcEventChannel
             await pipe.FlushAsync(ct);
         }
     }
+
+    private static NamedPipeServerStream CreatePipe()
+    {
+        if (OperatingSystem.IsWindows())
+            return CreateSecurePipe();
+
+        return new NamedPipeServerStream(
+            EventPipeName,
+            PipeDirection.Out,
+            1,
+            PipeTransmissionMode.Byte,
+            PipeOptions.Asynchronous);
+    }
+
+    [SupportedOSPlatform("windows")]
+    private static NamedPipeServerStream CreateSecurePipe() =>
+        NamedPipeServerStreamAcl.Create(
+            EventPipeName,
+            PipeDirection.Out,
+            1,
+            PipeTransmissionMode.Byte,
+            PipeOptions.Asynchronous,
+            inBufferSize:  0,
+            outBufferSize: 0,
+            IpcPipeSecurity.CreateAdminOnlySecurity());
 }

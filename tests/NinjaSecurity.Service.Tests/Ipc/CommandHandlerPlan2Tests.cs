@@ -36,7 +36,7 @@ public class CommandHandlerPlan2Tests
         guardMock.Setup(g => g.IsRunning).Returns(true);
         var handler = BuildHandler(rtGuard: guardMock);
 
-        var response = await handler.HandleAsync(new IpcRequest("GetRealTimeStatus"));
+        var response = await handler.HandleAsync(new IpcRequest("GetRealTimeStatus"), callerIsAdmin: false);
         Assert.True(response.Success);
     }
 
@@ -47,7 +47,7 @@ public class CommandHandlerPlan2Tests
         var handler = BuildHandler(rtGuard: guardMock);
         var payload = JsonSerializer.SerializeToElement(new SetRealTimePayload(true));
 
-        var response = await handler.HandleAsync(new IpcRequest("SetRealTimeEnabled", payload));
+        var response = await handler.HandleAsync(new IpcRequest("SetRealTimeEnabled", payload), callerIsAdmin: true);
         Assert.True(response.Success);
         guardMock.Verify(g => g.Start(), Times.Once);
     }
@@ -59,7 +59,7 @@ public class CommandHandlerPlan2Tests
         var handler = BuildHandler(rtGuard: guardMock);
         var payload = JsonSerializer.SerializeToElement(new SetRealTimePayload(false));
 
-        var response = await handler.HandleAsync(new IpcRequest("SetRealTimeEnabled", payload));
+        var response = await handler.HandleAsync(new IpcRequest("SetRealTimeEnabled", payload), callerIsAdmin: true);
         Assert.True(response.Success);
         guardMock.Verify(g => g.Stop(), Times.Once);
     }
@@ -72,7 +72,7 @@ public class CommandHandlerPlan2Tests
             .ReturnsAsync(new List<NinjaSecurity.Service.Engine.Models.ProcessInfo>());
         var handler = BuildHandler(procMon: procMock);
 
-        var response = await handler.HandleAsync(new IpcRequest("GetProcessList"));
+        var response = await handler.HandleAsync(new IpcRequest("GetProcessList"), callerIsAdmin: false);
         Assert.True(response.Success);
     }
 
@@ -83,7 +83,7 @@ public class CommandHandlerPlan2Tests
         sysOptMock.Setup(s => s.CleanTempFilesAsync(default)).ReturnsAsync(1024L);
         var handler = BuildHandler(sysOpt: sysOptMock);
 
-        var response = await handler.HandleAsync(new IpcRequest("CleanTempFiles"));
+        var response = await handler.HandleAsync(new IpcRequest("CleanTempFiles"), callerIsAdmin: true);
         Assert.True(response.Success);
     }
 }

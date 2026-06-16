@@ -2,6 +2,7 @@ using NinjaSecurity.Service.Data;
 using NinjaSecurity.Service.Engine;
 using NinjaSecurity.Service.Engine.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace NinjaSecurity.Service.Tests.Engine;
 
@@ -23,7 +24,7 @@ public class QuarantineManagerTests : IDisposable
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
         _db = new AppDbContext(opts);
-        _manager = new QuarantineManager(_db, new PassthroughDataProtector(), _quarantineDir);
+        _manager = new QuarantineManager(_db, new PassthroughDataProtector(), NullLogger<QuarantineManager>.Instance, _quarantineDir);
     }
 
     [Fact]

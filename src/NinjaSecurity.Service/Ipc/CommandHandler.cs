@@ -33,8 +33,17 @@ public class CommandHandler
         _scheduler = scheduler;
     }
 
-    public async Task<IpcResponse> HandleAsync(IpcRequest request, CancellationToken ct = default)
+    private static readonly HashSet<string> AdminOnlyCommands = new(StringComparer.Ordinal)
     {
+        "StartScan", "QuarantineAction", "SetRealTimeEnabled",
+        "SetAutostartEnabled", "SetScanSchedule", "CleanTempFiles", "UpdateSignatures"
+    };
+
+    public async Task<IpcResponse> HandleAsync(IpcRequest request, bool callerIsAdmin = false, CancellationToken ct = default)
+    {
+        if (AdminOnlyCommands.Contains(request.Command) && !callerIsAdmin)
+            return IpcResponse.Fail("Access denied: administrator privileges required");
+
         return request.Command switch
         {
             "StartScan"          => await HandleStartScanAsync(request, ct),
@@ -113,10 +122,6 @@ public class CommandHandler
             return IpcResponse.Fail("Quarantine entry not found");
         }
     }
-
-    // TODO(Plan 2 - security): gate Restore/Delete/Custom scan behind admin check via
-    // WindowsPrincipal.IsInRole(WindowsBuiltInRole.Administrator) using caller identity
-    // obtained from pipe.RunAsClient() in IpcServer. Write audit log entry with caller SID.
 
     private static string? ValidateCustomPath(string? path)
     {
