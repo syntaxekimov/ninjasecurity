@@ -83,10 +83,7 @@ jobs:
           "$hash  $file" | Out-File -FilePath SHA256SUMS.txt -Encoding utf8
 
       - name: Create GitHub Release
-        # TODO: pin to SHA once repo is on GitHub — run:
-        #   gh api repos/softprops/action-gh-release/git/ref/tags/v2 --jq '.object.sha'
-        # Dependabot will pin and update this automatically after first weekly run.
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65  # v2
         with:
           name: Ninja Security ${{ steps.ver.outputs.VERSION }}
           generate_release_notes: true
