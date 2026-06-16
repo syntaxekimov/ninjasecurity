@@ -19,10 +19,10 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore
-        run: dotnet restore AppName.sln
+        run: dotnet restore NinjaSecurity.sln
 
       - name: Build
-        run: dotnet build AppName.sln -c Release --no-restore
+        run: dotnet build NinjaSecurity.sln -c Release --no-restore
 
       - name: Test
-        run: dotnet test tests/AppName.Service.Tests -c Release --no-build -v minimal
+        run: dotnet test tests/NinjaSecurity.Service.Tests -c Release --no-build -v minimal

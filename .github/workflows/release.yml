@@ -37,7 +37,7 @@ jobs:
           VER: ${{ steps.ver.outputs.VERSION }}
         shell: pwsh
         run: |
-          dotnet publish src/AppName.Service/AppName.Service.csproj `
+          dotnet publish src/NinjaSecurity.Service/NinjaSecurity.Service.csproj `
             -c Release -r win-x64 --self-contained true `
             "-p:Version=$env:VER" "-p:AssemblyVersion=$env:VER" `
             -o publish/service

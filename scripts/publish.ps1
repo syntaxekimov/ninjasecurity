@@ -26,7 +26,7 @@ New-Item $AppOut     -ItemType Directory | Out-Null
 
 # Publish service
 Write-Host "`nPublishing service..." -ForegroundColor Yellow
-dotnet publish "$RepoRoot\src\AppName.Service\AppName.Service.csproj" `
+dotnet publish "$RepoRoot\src\NinjaSecurity.Service\NinjaSecurity.Service.csproj" `
     -c $Configuration -r $Runtime --self-contained true `
     -p:Version=$Version -p:AssemblyVersion=$Version `
     -o $ServiceOut

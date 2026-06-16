@@ -23,3 +23,12 @@ artifacts/
 # OS
 .DS_Store
 Thumbs.db
+
+# Claude Code — development tooling, not part of the project
+.claude/
+CLAUDE.md
+docs/superpowers/
+
+# Build outputs
+publish/
+*.ico
