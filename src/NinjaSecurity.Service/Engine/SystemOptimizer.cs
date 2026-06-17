@@ -49,7 +49,7 @@ public class SystemOptimizer : ISystemOptimizer
     {
         long freed = 0;
         var tempPath = Path.GetTempPath();
-        foreach (var file in Directory.EnumerateFiles(tempPath, "*", SearchOption.AllDirectories))
+        foreach (var file in Directory.EnumerateFiles(tempPath, "*", RecursiveOpts))
         {
             try
             {
@@ -150,10 +150,17 @@ public class SystemOptimizer : ISystemOptimizer
         catch { return false; }
     }
 
+    private static readonly EnumerationOptions RecursiveOpts = new()
+    {
+        RecurseSubdirectories = true,
+        IgnoreInaccessible    = true,
+        AttributesToSkip      = FileAttributes.ReparsePoint
+    };
+
     private static long GetDirectorySize(string path)
     {
         if (!Directory.Exists(path)) return 0;
-        return Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
+        return Directory.EnumerateFiles(path, "*", RecursiveOpts)
             .Sum(f =>
             {
                 try { return new FileInfo(f).Length; }
