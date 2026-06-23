@@ -78,11 +78,11 @@ Section "Main" SecMain
 
   ; Copy service binaries
   SetOutPath "$INSTDIR\service"
-  File /r "publish\service\*.*"
+  File /r "..\publish\service\*.*"
 
   ; Copy GUI binaries
   SetOutPath "$INSTDIR\app"
-  File /r "publish\app\*.*"
+  File /r "..\publish\app\*.*"
 
   ; Register Windows service (auto-start)
   ExecWait '"$SYSDIR\sc.exe" create "${SERVICE_NAME}" \

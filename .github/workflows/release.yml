@@ -70,12 +70,6 @@ jobs:
         shell: pwsh
         run: choco install nsis --no-progress -y
 
-      - name: List publish output
-        shell: pwsh
-        run: |
-          Write-Host "=== publish/ structure ==="
-          Get-ChildItem -Recurse publish | Select-Object FullName | Format-Table -AutoSize
-
       - name: Build installer with NSIS
         env:
           VER: ${{ steps.ver.outputs.VERSION }}
