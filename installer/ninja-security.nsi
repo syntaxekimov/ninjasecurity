@@ -15,7 +15,7 @@
 !define AUTORUN_KEY   "Software\Microsoft\Windows\CurrentVersion\Run"
 
 Name "${APP_NAME} ${APP_VERSION}"
-OutFile "NinjaSecuritySetup-${APP_VERSION}.exe"
+OutFile "..\NinjaSecuritySetup-${APP_VERSION}.exe"
 InstallDir "$PROGRAMFILES64\${APP_NAME}"
 InstallDirRegKey HKLM "${INSTALL_KEY}" "InstallDir"
 RequestExecutionLevel admin
