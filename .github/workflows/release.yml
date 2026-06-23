@@ -22,7 +22,6 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      # Extract version from tag safely via env var (no injection)
       # VERSION keeps the full semver (e.g. 0.1.0-beta); ASSEMBLY_VERSION strips
       # the pre-release suffix because AssemblyVersion requires major.minor.build only.
       - name: Extract version
@@ -57,6 +56,66 @@ jobs:
             -c Release -r win-x64 --self-contained true `
             "-p:Version=$env:VER" "-p:AssemblyVersion=$env:AVER" `
             -o publish/app
+
+      # ── Bundle ClamAV ────────────────────────────────────────────────────
+      - name: Download ClamAV (Windows x64 portable)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: |
+          $headers = @{
+            Authorization = "token $env:GH_TOKEN"
+            'User-Agent'  = 'NinjaSecurity-Build'
+          }
+          $release = Invoke-RestMethod `
+            "https://api.github.com/repos/Cisco-Talos/clamav/releases/latest" `
+            -Headers $headers
+          $asset = $release.assets |
+            Where-Object { $_.name -match '\.win\.x64\.zip$' } |
+            Select-Object -First 1
+          if (-not $asset) { throw "ClamAV Windows x64 asset not found in latest release" }
+
+          Write-Host "Downloading $($asset.name) ($([math]::Round($asset.size/1MB,1)) MB)..."
+          Invoke-WebRequest $asset.browser_download_url -OutFile clamav.zip `
+            -Headers @{'User-Agent'='NinjaSecurity-Build'}
+
+          Expand-Archive clamav.zip -DestinationPath clamav-tmp
+          $inner = Get-ChildItem clamav-tmp -Directory | Select-Object -First 1
+          New-Item publish/clamav -ItemType Directory -Force | Out-Null
+          Copy-Item "$($inner.FullName)/*" publish/clamav/ -Recurse -Force
+          Remove-Item clamav.zip, clamav-tmp -Recurse -Force
+
+          $count = (Get-ChildItem publish/clamav -File | Measure-Object).Count
+          Write-Host "ClamAV ready: $count files in publish/clamav/"
+
+      # ── Bundle YARA rules ─────────────────────────────────────────────────
+      - name: Download YARA rules (Neo23x0/signature-base)
+        shell: pwsh
+        run: |
+          Write-Host "Downloading signature-base YARA rules..."
+          Invoke-WebRequest `
+            "https://github.com/Neo23x0/signature-base/archive/refs/heads/master.zip" `
+            -OutFile yara.zip -Headers @{'User-Agent'='NinjaSecurity-Build'}
+
+          Expand-Archive yara.zip -DestinationPath yara-tmp
+          New-Item publish/rules -ItemType Directory -Force | Out-Null
+          $src = Get-Item "yara-tmp/signature-base-master/yara" -ErrorAction SilentlyContinue
+          if ($src) {
+            $yarFiles = Get-ChildItem $src -Filter "*.yar"
+            $yarFiles | Copy-Item -Destination publish/rules/
+            Write-Host "YARA rules installed: $($yarFiles.Count) files"
+          } else {
+            Write-Warning "yara/ folder not found in signature-base archive"
+          }
+          Remove-Item yara.zip, yara-tmp -Recurse -Force
+
+      # ── Build malware hash database ───────────────────────────────────────
+      - name: Build malware hash database
+        shell: pwsh
+        run: |
+          python scripts/build-hashdb.py publish/hashes.db
+          $size = [math]::Round((Get-Item publish/hashes.db).Length / 1KB, 1)
+          Write-Host "Hash database ready: $size KB"
 
       # Convert SVG icon → multi-size ICO using ImageMagick (pre-installed on windows-latest)
       - name: Generate ICO from SVG

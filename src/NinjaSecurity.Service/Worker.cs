@@ -12,6 +12,7 @@ public class Worker : BackgroundService
     private readonly IRealTimeGuard _realTimeGuard;
     private readonly IProcessMonitor _processMonitor;
     private readonly ScanScheduler _scheduler;
+    private readonly IClamAvDaemon _clamAvDaemon;
     private readonly ILogger<Worker> _logger;
 
     public Worker(
@@ -20,14 +21,16 @@ public class Worker : BackgroundService
         IRealTimeGuard realTimeGuard,
         IProcessMonitor processMonitor,
         ScanScheduler scheduler,
+        IClamAvDaemon clamAvDaemon,
         ILogger<Worker> logger)
     {
-        _ipcServer = ipcServer;
-        _eventChannel = eventChannel;
+        _ipcServer     = ipcServer;
+        _eventChannel  = eventChannel;
         _realTimeGuard = realTimeGuard;
         _processMonitor = processMonitor;
-        _scheduler = scheduler;
-        _logger = logger;
+        _scheduler     = scheduler;
+        _clamAvDaemon  = clamAvDaemon;
+        _logger        = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -41,7 +44,8 @@ public class Worker : BackgroundService
         await Task.WhenAll(
             _ipcServer.RunAsync(stoppingToken),
             _eventChannel.RunAsync(stoppingToken),
-            _scheduler.RunAsync(stoppingToken)
+            _scheduler.RunAsync(stoppingToken),
+            _clamAvDaemon.RunAsync(stoppingToken)
         );
 
         _realTimeGuard.ThreatDetected -= OnThreatDetected;

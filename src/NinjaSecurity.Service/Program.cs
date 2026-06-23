@@ -7,8 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 Directory.CreateDirectory(AppPaths.AppData);
 Directory.CreateDirectory(AppPaths.QuarantinePath);
-Directory.CreateDirectory(AppPaths.DatabasesPath);
-Directory.CreateDirectory(AppPaths.YaraRulesPath);
+Directory.CreateDirectory(AppPaths.ClamDbPath);
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -24,11 +23,11 @@ builder.Services.AddSingleton<IClamAvScanner, ClamAvScanner>();
 builder.Services.AddSingleton<IYaraScanner, YaraScanner>();
 builder.Services.AddSingleton<ThreatScorer>();
 builder.Services.AddSingleton<IScanEngine, ScanEngine>();
-builder.Services.AddSingleton<IpcServer>(); // uses IServiceScopeFactory internally
+builder.Services.AddSingleton<IpcServer>();
 
 // Scoped: one DbContext per IPC request scope
 builder.Services.AddScoped<IQuarantineManager, QuarantineManager>();
-builder.Services.AddScoped<CommandHandler>(); // resolved per-scope inside IpcServer
+builder.Services.AddScoped<CommandHandler>();
 
 // Plan 2 — real-time protection and system tools
 builder.Services.AddSingleton<IRealTimeGuard>(sp => new RealTimeGuard(
@@ -38,17 +37,25 @@ builder.Services.AddSingleton<IRealTimeGuard>(sp => new RealTimeGuard(
     ransomwareDetector: sp.GetService<RansomwareDetector>()));
 builder.Services.AddSingleton<IProcessMonitor, ProcessMonitor>();
 builder.Services.AddSingleton<ISystemOptimizer, SystemOptimizer>();
-builder.Services.AddSingleton<IUpdateService, UpdateService>();
 builder.Services.AddSingleton<RansomwareDetector>();
 builder.Services.AddSingleton<IpcEventChannel>();
 builder.Services.AddSingleton<ScanScheduler>();
-builder.Services.AddHttpClient<UpdateService>();
+
+// ClamAV daemon (manages clamd.exe lifecycle)
+builder.Services.AddSingleton<IClamAvDaemon, ClamAvDaemon>();
+
+// UpdateService gets IClamAvDaemon injected via IHttpClientFactory + manual resolution
+builder.Services.AddSingleton<IUpdateService>(sp =>
+    new UpdateService(
+        httpClient:    sp.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(UpdateService)),
+        clamAvDaemon:  sp.GetRequiredService<IClamAvDaemon>(),
+        logger:        sp.GetService<ILogger<UpdateService>>()));
+builder.Services.AddHttpClient(nameof(UpdateService));
 
 builder.Services.AddHostedService<Worker>();
 
 var host = builder.Build();
 
-// Auto-migrate database on startup
 using (var scope = host.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();

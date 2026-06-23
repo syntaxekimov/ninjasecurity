@@ -59,7 +59,6 @@ Unicode true
 
 ; Stop + remove existing service gracefully before (re)install
 !macro StopAndRemoveService
-  ; Ignore errors — service may not exist yet
   ClearErrors
   ExecWait '"$SYSDIR\sc.exe" stop "${SERVICE_NAME}"'
   Sleep 2000
@@ -83,6 +82,24 @@ Section "Main" SecMain
   ; Copy GUI binaries
   SetOutPath "$INSTDIR\app"
   File /r "..\publish\app\*.*"
+
+  ; Copy ClamAV engine (bundled by CI; skipped in local builds without publish/clamav)
+  !if /FileExists "..\publish\clamav\clamd.exe"
+    SetOutPath "$INSTDIR\clamav"
+    File /r "..\publish\clamav\*.*"
+  !endif
+
+  ; Copy YARA rules (bundled by CI)
+  !if /FileExists "..\publish\rules"
+    SetOutPath "$INSTDIR\rules"
+    File /r "..\publish\rules\*.*"
+  !endif
+
+  ; Copy malware hash database (bundled by CI)
+  !if /FileExists "..\publish\hashes.db"
+    SetOutPath "$INSTDIR"
+    File "..\publish\hashes.db"
+  !endif
 
   ; Register Windows service (auto-start)
   ExecWait '"$SYSDIR\sc.exe" create "${SERVICE_NAME}" \
@@ -118,14 +135,14 @@ Section "Main" SecMain
   WriteRegStr   HKLM "${INSTALL_KEY}" "Version"    "${APP_VERSION}"
 
   ; Add/Programs uninstall entry
-  WriteRegStr   HKLM "${UNINSTALL_KEY}" "DisplayName"          "${APP_NAME}"
-  WriteRegStr   HKLM "${UNINSTALL_KEY}" "DisplayVersion"       "${APP_VERSION}"
-  WriteRegStr   HKLM "${UNINSTALL_KEY}" "Publisher"            "${APP_PUBLISHER}"
-  WriteRegStr   HKLM "${UNINSTALL_KEY}" "InstallLocation"      "$INSTDIR"
-  WriteRegStr   HKLM "${UNINSTALL_KEY}" "UninstallString"      '"$INSTDIR\Uninstall.exe"'
-  WriteRegStr   HKLM "${UNINSTALL_KEY}" "DisplayIcon"          "$INSTDIR\app\NinjaSecurity.App.exe,0"
-  WriteRegDWORD HKLM "${UNINSTALL_KEY}" "NoModify"             1
-  WriteRegDWORD HKLM "${UNINSTALL_KEY}" "NoRepair"             1
+  WriteRegStr   HKLM "${UNINSTALL_KEY}" "DisplayName"     "${APP_NAME}"
+  WriteRegStr   HKLM "${UNINSTALL_KEY}" "DisplayVersion"  "${APP_VERSION}"
+  WriteRegStr   HKLM "${UNINSTALL_KEY}" "Publisher"       "${APP_PUBLISHER}"
+  WriteRegStr   HKLM "${UNINSTALL_KEY}" "InstallLocation" "$INSTDIR"
+  WriteRegStr   HKLM "${UNINSTALL_KEY}" "UninstallString" '"$INSTDIR\Uninstall.exe"'
+  WriteRegStr   HKLM "${UNINSTALL_KEY}" "DisplayIcon"     "$INSTDIR\app\NinjaSecurity.App.exe,0"
+  WriteRegDWORD HKLM "${UNINSTALL_KEY}" "NoModify"        1
+  WriteRegDWORD HKLM "${UNINSTALL_KEY}" "NoRepair"        1
 
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 SectionEnd
@@ -149,9 +166,12 @@ Section "Uninstall"
   ; Remove GUI auto-start
   DeleteRegValue HKCU "${AUTORUN_KEY}" "${APP_NAME}"
 
-  ; Remove files (keep user data in AppData)
+  ; Remove installed files (keep user data in ProgramData)
   RMDir /r "$INSTDIR\service"
   RMDir /r "$INSTDIR\app"
+  RMDir /r "$INSTDIR\clamav"
+  RMDir /r "$INSTDIR\rules"
+  Delete    "$INSTDIR\hashes.db"
   Delete    "$INSTDIR\Uninstall.exe"
   RMDir     "$INSTDIR"
 
