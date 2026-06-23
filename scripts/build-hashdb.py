@@ -7,7 +7,7 @@ import urllib.request
 import urllib.parse
 
 EICAR_SHA256 = "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f"
-API_URL      = "https://bazaar.abuse.ch/api/"
+API_URL      = "https://mb-api.abuse.ch/api/v1/"
 SELECTORS    = ["time", "exe", "dll", "doc", "ps1", "jar", "zip"]
 
 
@@ -55,7 +55,7 @@ def build(output: str) -> None:
             print(f"  [{selector}] warning: {exc}", file=sys.stderr)
 
     conn.close()
-    print(f"Hash database built: {inserted} entries → {output}")
+    print(f"Hash database built: {inserted} entries -> {output}")
 
 
 if __name__ == "__main__":

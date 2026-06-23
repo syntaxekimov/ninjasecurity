@@ -111,6 +111,8 @@ jobs:
 
       # ── Build malware hash database ───────────────────────────────────────
       - name: Build malware hash database
+        env:
+          PYTHONIOENCODING: utf-8
         shell: pwsh
         run: |
           python scripts/build-hashdb.py publish/hashes.db
